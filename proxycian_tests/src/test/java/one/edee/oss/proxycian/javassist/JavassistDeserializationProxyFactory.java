@@ -67,6 +67,9 @@ public class JavassistDeserializationProxyFactory implements DeserializationProx
 				constructorArgs
 			);
 		} catch (Exception ex) {
+			for (Class<?> anInterface : interfaces) {
+				System.out.println(anInterface.getName());
+			}
 			System.out.println("The problem occurred!");
 			ex.printStackTrace();
 			throw ex;
