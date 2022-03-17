@@ -53,18 +53,24 @@ public class JavassistDeserializationProxyFactory implements DeserializationProx
 
 	@Override
 	public Object deserialize(@Nonnull ProxyStateWithConstructorArgs proxyState, @Nonnull Class<?>[] interfaces, @Nonnull Class<?>[] constructorTypes, @Nonnull Object[] constructorArgs) {
-		return JavassistProxyGenerator.instantiate(
-			new JavassistDispatcherInvocationHandler<>(
-				proxyState,
-				GenericBucketProxyGenerator.getPropertiesInvoker(),
-				GenericBucketProxyGenerator.getterInvoker(),
-				GenericBucketProxyGenerator.setterInvoker(),
-				SerializableProxy.getWriteReplaceMethodInvoker(INSTANCE)
-			),
-			interfaces,
-			constructorTypes,
-			constructorArgs
-		);
+		try {
+			return JavassistProxyGenerator.instantiate(
+				new JavassistDispatcherInvocationHandler<>(
+					proxyState,
+					GenericBucketProxyGenerator.getPropertiesInvoker(),
+					GenericBucketProxyGenerator.getterInvoker(),
+					GenericBucketProxyGenerator.setterInvoker(),
+					SerializableProxy.getWriteReplaceMethodInvoker(INSTANCE)
+				),
+				interfaces,
+				constructorTypes,
+				constructorArgs
+			);
+		} catch (Exception ex) {
+			System.out.println("The problem occurred!");
+			ex.printStackTrace();
+			throw ex;
+		}
 	}
 
 }
