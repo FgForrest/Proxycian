@@ -1,6 +1,7 @@
 package one.edee.oss.proxycian.javassist.trait.localDataStore;
 
 import one.edee.oss.proxycian.JavassistProxyGenerator;
+import one.edee.oss.proxycian.javassist.AbstractJavassistProxycianTest;
 import one.edee.oss.proxycian.model.traits.GenericBucket;
 import one.edee.oss.proxycian.recipe.Advice;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2021
  */
-public class LocalDataStoreAdviceTest {
+public class LocalDataStoreAdviceTest extends AbstractJavassistProxycianTest {
 
 	@Test
 	public void shouldProxyAnythingAndAddLocalDataStore() {

@@ -7,13 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * No extra information provided - see (selfexplanatory) method signatures.
- * I have the best intention to write more detailed documentation but if you see this, there was not enough time or will to do so.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2021
- */
-public class JavassistDiamondTest {
+public class JavassistDiamondTest extends AbstractJavassistProxycianTest {
 
 	@Test
 	public void ByteBuddyProxyRecipeGenerator_DiamondProblemTest() {

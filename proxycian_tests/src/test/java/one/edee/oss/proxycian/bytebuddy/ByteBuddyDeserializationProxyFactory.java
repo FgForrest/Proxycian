@@ -16,7 +16,7 @@ import java.util.Set;
 
 import static one.edee.oss.proxycian.model.traits.GenericBucketProxyGenerator.*;
 
-public class ByteBuddyDeserializationProxyFactory implements DeserializationProxyFactory {
+public class ByteBuddyDeserializationProxyFactory extends AbstractByteBuddyProxycianTest implements DeserializationProxyFactory {
 	public static final DeserializationProxyFactory INSTANCE = new ByteBuddyDeserializationProxyFactory();
 	// LIST OF "SYSTEM" INTERFACES THAT ARE ADDED TO OUR PROXIES AUTOMATICALLY EITHER BY US OR BY THE BYTECODE LIBRARY
 	private static final Set<Class<?>> EXCLUDED_CLASSES = new HashSet<>(

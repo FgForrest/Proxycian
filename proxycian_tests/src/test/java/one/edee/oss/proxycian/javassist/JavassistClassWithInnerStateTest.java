@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class JavassistClassWithInnerStateTest {
+public class JavassistClassWithInnerStateTest extends AbstractJavassistProxycianTest {
 
 	@Test
 	public void JavassistProxyRecipeGenerator_Proxy_Created() {

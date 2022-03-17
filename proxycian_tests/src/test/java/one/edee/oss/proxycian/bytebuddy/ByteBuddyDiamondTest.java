@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2021
  */
-public class ByteBuddyDiamondTest {
+public class ByteBuddyDiamondTest extends AbstractByteBuddyProxycianTest {
 
 	@Test
 	public void ByteBuddyProxyRecipeGenerator_DiamondProblemTest() {

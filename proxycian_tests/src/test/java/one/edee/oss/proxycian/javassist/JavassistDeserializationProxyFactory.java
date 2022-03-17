@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class JavassistDeserializationProxyFactory implements DeserializationProxyFactory {
+public class JavassistDeserializationProxyFactory extends AbstractJavassistProxycianTest implements DeserializationProxyFactory {
 	public static final SerializableProxy.DeserializationProxyFactory INSTANCE = new JavassistDeserializationProxyFactory();
 	// LIST OF "SYSTEM" INTERFACES THAT ARE ADDED TO OUR PROXIES AUTOMATICALLY EITHER BY US OR BY THE BYTECODE LIBRARY
 	private static final Set<Class<?>> EXCLUDED_CLASSES = new HashSet<>(
@@ -53,27 +53,18 @@ public class JavassistDeserializationProxyFactory implements DeserializationProx
 
 	@Override
 	public Object deserialize(@Nonnull ProxyStateWithConstructorArgs proxyState, @Nonnull Class<?>[] interfaces, @Nonnull Class<?>[] constructorTypes, @Nonnull Object[] constructorArgs) {
-		try {
-			return JavassistProxyGenerator.instantiate(
-				new JavassistDispatcherInvocationHandler<>(
-					proxyState,
-					GenericBucketProxyGenerator.getPropertiesInvoker(),
-					GenericBucketProxyGenerator.getterInvoker(),
-					GenericBucketProxyGenerator.setterInvoker(),
-					SerializableProxy.getWriteReplaceMethodInvoker(INSTANCE)
-				),
-				interfaces,
-				constructorTypes,
-				constructorArgs
-			);
-		} catch (Exception ex) {
-			for (Class<?> anInterface : interfaces) {
-				System.out.println(anInterface.getName());
-			}
-			System.out.println("The problem occurred!");
-			ex.printStackTrace();
-			throw ex;
-		}
+		return JavassistProxyGenerator.instantiate(
+			new JavassistDispatcherInvocationHandler<>(
+				proxyState,
+				GenericBucketProxyGenerator.getPropertiesInvoker(),
+				GenericBucketProxyGenerator.getterInvoker(),
+				GenericBucketProxyGenerator.setterInvoker(),
+				SerializableProxy.getWriteReplaceMethodInvoker(INSTANCE)
+			),
+			interfaces,
+			constructorTypes,
+			constructorArgs
+		);
 	}
 
 }

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ByteBuddyProxyRecipeTest {
+public class ByteBuddyProxyRecipeTest extends AbstractByteBuddyProxycianTest {
 
 	@Test
 	public void ByteBuddyProxyRecipeGenerator_Proxy_Created() {

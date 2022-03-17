@@ -29,6 +29,27 @@ public class JavassistProxyGenerator {
 	private static final Map<ConstructorCacheKey, Constructor<?>> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
 
 	/**
+	 * Method clears method classification cache that keeps direct references from proxied class methods to their
+	 * implementation in the form of {@link PredicateMethodClassification#invocationHandler}. This cache
+	 * speeds up method execution heavily.
+	 */
+	public static void clearMethodClassificationCache() {
+		CLASSIFICATION_CACHE.clear();
+	}
+
+	/**
+	 * Method clears cached classes. Please keep in mind, that classes are probably trapped in the {@link ClassLoader}
+	 * and old JVMs were not able to purge non-used classes from the {@link ClassLoader} -
+	 * <a href="https://stackoverflow.com/questions/2433261/when-and-how-are-classes-garbage-collected-in-java">see this answer</>.
+	 * This cache allows reusing already generated classes for same combination of input interfaces / combination of
+	 * {@link CacheKeyAffectingMethodClassification} classifiers.
+	 */
+	public static void clearClassCache() {
+		CACHED_PROXY_CLASSES.clear();
+		CACHED_PROXY_CONSTRUCTORS.clear();
+	}
+
+	/**
 	 * Method creates and instantiates new proxy object with passed set of interfaces and the invocation handler.
 	 * See {@link com.fg.edee.proxy.model.traits.GenericBucketProxyGenerator#instantiateJavassistProxy(java.lang.Class)}
 	 * for example usage.

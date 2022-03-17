@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JavassistInterfaceProxyStateAccessorGeneratorTest {
+public class JavassistInterfaceProxyStateAccessorGeneratorTest extends AbstractJavassistProxycianTest {
 
 	@BeforeEach
 	public void setUp() {

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class ByteBuddySerializationTest {
+public class ByteBuddySerializationTest extends AbstractByteBuddyProxycianTest {
 
 	@Test
 	public void ByteBuddyProxyGenerator_ProxySerialization_DeserializedCopyEqualsOriginal() throws Exception {

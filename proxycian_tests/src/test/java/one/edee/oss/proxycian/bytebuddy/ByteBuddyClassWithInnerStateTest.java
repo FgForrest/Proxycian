@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ByteBuddyClassWithInnerStateTest {
+public class ByteBuddyClassWithInnerStateTest extends AbstractByteBuddyProxycianTest {
 
 	@Test
 	public void ByteBuddyProxyRecipeGenerator_Proxy_Created() {

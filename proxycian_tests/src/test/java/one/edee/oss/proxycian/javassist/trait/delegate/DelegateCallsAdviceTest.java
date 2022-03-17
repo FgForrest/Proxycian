@@ -2,6 +2,7 @@ package one.edee.oss.proxycian.javassist.trait.delegate;
 
 import lombok.Data;
 import one.edee.oss.proxycian.JavassistProxyGenerator;
+import one.edee.oss.proxycian.javassist.AbstractJavassistProxycianTest;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
 import one.edee.oss.proxycian.trait.delegate.DelegateCallsAdvice;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2021
  */
-public class DelegateCallsAdviceTest {
+public class DelegateCallsAdviceTest extends AbstractJavassistProxycianTest {
 
 	@Test
 	public void JavassistRecipeGenerator_DelegateCalls() {

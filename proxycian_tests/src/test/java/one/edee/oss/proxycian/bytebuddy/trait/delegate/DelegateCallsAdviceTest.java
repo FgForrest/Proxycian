@@ -2,6 +2,7 @@ package one.edee.oss.proxycian.bytebuddy.trait.delegate;
 
 import lombok.Data;
 import one.edee.oss.proxycian.ByteBuddyProxyGenerator;
+import one.edee.oss.proxycian.bytebuddy.AbstractByteBuddyProxycianTest;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
 import one.edee.oss.proxycian.trait.delegate.DelegateCallsAdvice;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2021
  */
-public class DelegateCallsAdviceTest {
+public class DelegateCallsAdviceTest extends AbstractByteBuddyProxycianTest {
 
 	@Test
 	public void ByteBuddyProxyRecipeGenerator_DelegateCalls() {

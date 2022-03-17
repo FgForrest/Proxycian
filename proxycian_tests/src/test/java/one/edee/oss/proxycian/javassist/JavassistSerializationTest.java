@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JavassistSerializationTest {
+public class JavassistSerializationTest extends AbstractJavassistProxycianTest {
 
 	@Test
 	public void JavassistGenerator_ProxySerialization_DeserializedCopyEqualsOriginal() throws Exception {

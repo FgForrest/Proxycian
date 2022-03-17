@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ByteBuddyAbstractClassProxyStateAccessorGeneratorTest {
+public class ByteBuddyAbstractClassProxyStateAccessorGeneratorTest extends AbstractByteBuddyProxycianTest {
 
 	@Test
 	public void ByteBuddyGenerator_ProxyAbstract_Created() {
