@@ -24,15 +24,30 @@ public class DelegateCallsAdvice<T> implements IntroductionAdvice<T>, SelfVerifi
 	private static final long serialVersionUID = 8341706887626479107L;
 	private final Class<T> iface;
 	private final Function<Object, Object> delegateAccessor;
+	private final boolean considerVerified;
 
 	private DelegateCallsAdvice(Class<T> iface) {
 		this.iface = iface;
 		this.delegateAccessor = null;
+		this.considerVerified = false;
 	}
 
 	public DelegateCallsAdvice(Class<T> iface, Function<Object, Object> delegateAccessor) {
 		this.iface = iface;
 		this.delegateAccessor = delegateAccessor;
+		this.considerVerified = false;
+	}
+
+	private DelegateCallsAdvice(Class<T> iface, boolean considerVerified) {
+		this.iface = iface;
+		this.delegateAccessor = null;
+		this.considerVerified = considerVerified;
+	}
+
+	public DelegateCallsAdvice(Class<T> iface, Function<Object, Object> delegateAccessor, boolean considerVerified) {
+		this.iface = iface;
+		this.delegateAccessor = delegateAccessor;
+		this.considerVerified = considerVerified;
 	}
 
 	public static <T> DelegateCallsAdvice<T> getInstance(Class<T> iface) {
@@ -43,9 +58,17 @@ public class DelegateCallsAdvice<T> implements IntroductionAdvice<T>, SelfVerifi
 		return new DelegateCallsAdvice<>(iface, delegateAccessor);
 	}
 
+	public static <T> DelegateCallsAdvice<T> getInstanceValidFor(Class<T> iface) {
+		return new DelegateCallsAdvice<>(iface, true);
+	}
+
+	public static <T> DelegateCallsAdvice<T> getInstanceValidFor(Class<T> iface, Function<Object, Object> delegateAccessor) {
+		return new DelegateCallsAdvice<>(iface, delegateAccessor, true);
+	}
+
 	@Override
 	public boolean verifyCompatibility(@Nonnull Object proxyState, @Nonnull Class<?> withRequestedInterface) {
-		return withRequestedInterface.isInstance(delegateAccessor == null ? proxyState : delegateAccessor.apply(proxyState));
+		return considerVerified || withRequestedInterface.isInstance(delegateAccessor == null ? proxyState : delegateAccessor.apply(proxyState));
 	}
 
 	@Override
