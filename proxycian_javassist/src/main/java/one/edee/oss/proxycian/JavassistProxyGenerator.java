@@ -3,6 +3,7 @@ package one.edee.oss.proxycian;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
@@ -24,6 +25,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class JavassistProxyGenerator {
+	// LIST OF "SYSTEM" INTERFACES THAT ARE ADDED TO OUR PROXIES AUTOMATICALLY EITHER BY US OR BY THE BYTECODE LIBRARY
+	public static final Set<Class<?>> EXCLUDED_CLASSES = new HashSet<>(
+		Arrays.asList(
+			ProxyObject.class,
+			ProxyStateAccessor.class
+		)
+	);
 	static final Map<ClassMethodCacheKey, CurriedMethodContextInvocationHandler<?,?>> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
 	private static final Map<List<Class<?>>, Class<?>> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
 	private static final Map<ConstructorCacheKey, Constructor<?>> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);

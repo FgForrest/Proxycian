@@ -38,6 +38,13 @@ public class ByteBuddyProxyGenerator {
 	static final Map<ClassMethodCacheKey, CurriedMethodContextInvocationHandler<?,?>> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
 	static final Map<ClassMethodCacheKey, MethodHandle> DEFAULT_METHOD_CACHE = new ConcurrentHashMap<>(32);
 	public static final String INVOCATION_HANDLER_FIELD = "dispatcherInvocationHandler";
+	// LIST OF "SYSTEM" INTERFACES THAT ARE ADDED TO OUR PROXIES AUTOMATICALLY EITHER BY US OR BY THE BYTECODE LIBRARY
+	public static final Set<Class<?>> EXCLUDED_CLASSES = new HashSet<>(
+		Collections.singletonList(
+			ProxyStateAccessor.class
+		)
+	);
+
 	private static final Map<List<Class<?>>, Class<?>> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
 	private static final Map<ConstructorCacheKey, Constructor<?>> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
 	private static final AtomicInteger CLASS_COUNTER = new AtomicInteger(0);

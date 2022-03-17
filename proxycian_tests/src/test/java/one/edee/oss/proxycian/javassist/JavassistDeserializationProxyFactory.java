@@ -1,30 +1,19 @@
 package one.edee.oss.proxycian.javassist;
 
 
-import javassist.util.proxy.ProxyObject;
 import one.edee.oss.proxycian.JavassistDispatcherInvocationHandler;
 import one.edee.oss.proxycian.JavassistProxyGenerator;
 import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
 import one.edee.oss.proxycian.model.traits.GenericBucketProxyGenerator;
-import one.edee.oss.proxycian.trait.ProxyStateAccessor;
 import one.edee.oss.proxycian.trait.SerializableProxy;
 import one.edee.oss.proxycian.trait.SerializableProxy.DeserializationProxyFactory;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 public class JavassistDeserializationProxyFactory extends AbstractJavassistProxycianTest implements DeserializationProxyFactory {
 	public static final SerializableProxy.DeserializationProxyFactory INSTANCE = new JavassistDeserializationProxyFactory();
-	// LIST OF "SYSTEM" INTERFACES THAT ARE ADDED TO OUR PROXIES AUTOMATICALLY EITHER BY US OR BY THE BYTECODE LIBRARY
-	private static final Set<Class<?>> EXCLUDED_CLASSES = new HashSet<>(
-		Arrays.asList(
-			ProxyObject.class,
-			ProxyStateAccessor.class
-		)
-	);
 	private static final long serialVersionUID = 3573491785842144918L;
 
 	private JavassistDeserializationProxyFactory() {
@@ -34,7 +23,7 @@ public class JavassistDeserializationProxyFactory extends AbstractJavassistProxy
 	@Nonnull
 	@Override
 	public Set<Class<?>> getExcludedInterfaces() {
-		return EXCLUDED_CLASSES;
+		return JavassistProxyGenerator.EXCLUDED_CLASSES;
 	}
 
 	@Override
