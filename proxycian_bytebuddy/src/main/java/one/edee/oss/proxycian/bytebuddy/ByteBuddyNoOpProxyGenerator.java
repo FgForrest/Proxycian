@@ -1,5 +1,7 @@
-package one.edee.oss.proxycian;
+package one.edee.oss.proxycian.bytebuddy;
 
+
+import one.edee.oss.proxycian.DispatcherInvocationHandler;
 
 public interface ByteBuddyNoOpProxyGenerator {
     DispatcherInvocationHandler NULL_INVOCATION_HANDLER = new DispatcherInvocationHandler() { };

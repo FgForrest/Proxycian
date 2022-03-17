@@ -1,4 +1,4 @@
-package one.edee.oss.proxycian;
+package one.edee.oss.proxycian.javassist;
 
 import javassist.util.proxy.MethodHandler;
 

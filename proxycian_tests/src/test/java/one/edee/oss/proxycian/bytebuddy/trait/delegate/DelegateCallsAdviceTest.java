@@ -1,8 +1,8 @@
 package one.edee.oss.proxycian.bytebuddy.trait.delegate;
 
 import lombok.Data;
-import one.edee.oss.proxycian.ByteBuddyProxyGenerator;
 import one.edee.oss.proxycian.bytebuddy.AbstractByteBuddyProxycianTest;
+import one.edee.oss.proxycian.bytebuddy.ByteBuddyProxyGenerator;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
 import one.edee.oss.proxycian.trait.delegate.DelegateCallsAdvice;
 import org.junit.jupiter.api.Test;

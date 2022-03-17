@@ -1,7 +1,7 @@
 package one.edee.oss.proxycian.javassist.trait.localDataStore;
 
-import one.edee.oss.proxycian.JavassistProxyGenerator;
 import one.edee.oss.proxycian.javassist.AbstractJavassistProxycianTest;
+import one.edee.oss.proxycian.javassist.JavassistProxyGenerator;
 import one.edee.oss.proxycian.model.traits.GenericBucket;
 import one.edee.oss.proxycian.recipe.Advice;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;

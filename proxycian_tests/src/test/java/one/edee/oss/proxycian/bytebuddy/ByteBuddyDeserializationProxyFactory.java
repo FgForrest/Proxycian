@@ -1,8 +1,6 @@
 package one.edee.oss.proxycian.bytebuddy;
 
 
-import one.edee.oss.proxycian.ByteBuddyDispatcherInvocationHandler;
-import one.edee.oss.proxycian.ByteBuddyProxyGenerator;
 import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
 import one.edee.oss.proxycian.trait.SerializableProxy;
 import one.edee.oss.proxycian.trait.SerializableProxy.DeserializationProxyFactory;

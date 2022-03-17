@@ -1,8 +1,11 @@
-package one.edee.oss.proxycian;
+package one.edee.oss.proxycian.javassist;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyObject;
 import lombok.RequiredArgsConstructor;
+import one.edee.oss.proxycian.AbstractDispatcherInvocationHandler;
+import one.edee.oss.proxycian.CurriedMethodContextInvocationHandler;
+import one.edee.oss.proxycian.MethodClassification;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.exception.InvalidSuperMethodCallException;
 import one.edee.oss.proxycian.trait.ProxyStateAccessor;

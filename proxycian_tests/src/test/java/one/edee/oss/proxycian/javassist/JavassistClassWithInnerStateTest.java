@@ -1,7 +1,6 @@
 package one.edee.oss.proxycian.javassist;
 
 import lombok.Data;
-import one.edee.oss.proxycian.JavassistProxyGenerator;
 import one.edee.oss.proxycian.model.traits.GenericBucket;
 import one.edee.oss.proxycian.recipe.Advice;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;

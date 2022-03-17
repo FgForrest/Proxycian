@@ -1,4 +1,4 @@
-package one.edee.oss.proxycian;
+package one.edee.oss.proxycian.bytebuddy;
 
 
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
@@ -8,6 +8,9 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
+import one.edee.oss.proxycian.AbstractDispatcherInvocationHandler;
+import one.edee.oss.proxycian.CurriedMethodContextInvocationHandler;
+import one.edee.oss.proxycian.MethodClassification;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.trait.ProxyStateAccessor;
 import one.edee.oss.proxycian.trait.StandardJavaMethods;
@@ -21,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static one.edee.oss.proxycian.ByteBuddyProxyGenerator.INVOCATION_HANDLER_FIELD;
+import static one.edee.oss.proxycian.bytebuddy.ByteBuddyProxyGenerator.INVOCATION_HANDLER_FIELD;
 import static one.edee.oss.proxycian.util.ReflectionUtils.findMethodHandle;
 
 public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> {

@@ -1,7 +1,6 @@
 package one.edee.oss.proxycian.bytebuddy;
 
 import lombok.Data;
-import one.edee.oss.proxycian.ByteBuddyProxyGenerator;
 import one.edee.oss.proxycian.model.traits.GenericBucket;
 import one.edee.oss.proxycian.recipe.Advice;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;

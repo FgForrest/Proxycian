@@ -1,8 +1,6 @@
 package one.edee.oss.proxycian.javassist;
 
 
-import one.edee.oss.proxycian.JavassistDispatcherInvocationHandler;
-import one.edee.oss.proxycian.JavassistProxyGenerator;
 import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
 import one.edee.oss.proxycian.model.traits.GenericBucketProxyGenerator;
 import one.edee.oss.proxycian.trait.SerializableProxy;

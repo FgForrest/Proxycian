@@ -1,7 +1,5 @@
 package one.edee.oss.proxycian.bytebuddy;
 
-import one.edee.oss.proxycian.ByteBuddyDispatcherInvocationHandler;
-import one.edee.oss.proxycian.ByteBuddyProxyGenerator;
 import one.edee.oss.proxycian.model.traits.GenericBucket;
 import org.junit.jupiter.api.Test;
 

@@ -1,9 +1,14 @@
-package one.edee.oss.proxycian;
+package one.edee.oss.proxycian.javassist;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+import one.edee.oss.proxycian.CacheKeyAffectingMethodClassification;
+import one.edee.oss.proxycian.CurriedMethodContextInvocationHandler;
+import one.edee.oss.proxycian.OnInstantiationCallback;
+import one.edee.oss.proxycian.PredicateMethodClassification;
+import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;

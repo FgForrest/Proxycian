@@ -1,12 +1,12 @@
 package one.edee.oss.proxycian.model.traits;
 
-import one.edee.oss.proxycian.ByteBuddyDispatcherInvocationHandler;
-import one.edee.oss.proxycian.ByteBuddyProxyGenerator;
-import one.edee.oss.proxycian.JavassistDispatcherInvocationHandler;
-import one.edee.oss.proxycian.JavassistProxyGenerator;
 import one.edee.oss.proxycian.PredicateMethodClassification;
 import one.edee.oss.proxycian.bytebuddy.ByteBuddyDeserializationProxyFactory;
+import one.edee.oss.proxycian.bytebuddy.ByteBuddyDispatcherInvocationHandler;
+import one.edee.oss.proxycian.bytebuddy.ByteBuddyProxyGenerator;
 import one.edee.oss.proxycian.javassist.JavassistDeserializationProxyFactory;
+import one.edee.oss.proxycian.javassist.JavassistDispatcherInvocationHandler;
+import one.edee.oss.proxycian.javassist.JavassistProxyGenerator;
 import one.edee.oss.proxycian.trait.SerializableProxy;
 
 import java.io.Serializable;

@@ -1,6 +1,5 @@
 package one.edee.oss.proxycian.bytebuddy;
 
-import one.edee.oss.proxycian.ByteBuddyProxyGenerator;
 import org.junit.jupiter.api.BeforeEach;
 
 /**

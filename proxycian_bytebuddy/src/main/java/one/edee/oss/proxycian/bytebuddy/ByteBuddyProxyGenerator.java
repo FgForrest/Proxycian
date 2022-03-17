@@ -1,4 +1,4 @@
-package one.edee.oss.proxycian;
+package one.edee.oss.proxycian.bytebuddy;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
@@ -9,6 +9,12 @@ import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatchers;
+import one.edee.oss.proxycian.CacheKeyAffectingMethodClassification;
+import one.edee.oss.proxycian.CurriedMethodContextInvocationHandler;
+import one.edee.oss.proxycian.DispatcherInvocationHandler;
+import one.edee.oss.proxycian.OnInstantiationCallback;
+import one.edee.oss.proxycian.PredicateMethodClassification;
+import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;

@@ -1,7 +1,5 @@
 package one.edee.oss.proxycian.javassist;
 
-import one.edee.oss.proxycian.JavassistDispatcherInvocationHandler;
-import one.edee.oss.proxycian.JavassistProxyGenerator;
 import one.edee.oss.proxycian.model.traits.GenericBucket;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,5 @@
 package one.edee.oss.proxycian.javassist;
 
-import one.edee.oss.proxycian.JavassistProxyGenerator;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
