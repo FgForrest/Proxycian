@@ -44,14 +44,14 @@ public class ByteBuddyProxyRecipeTest extends AbstractByteBuddyProxycianTest {
 				new Advice[]{LocalDataStoreAdvice.INSTANCE},
 				(proxy, proxyState) -> {
 					assertNotNull(proxyState);
-					((BaseClass)proxy).setInitialized(true);
+					((BaseClass) proxy).setInitialized(true);
 				}
 			),
 			new GenericBucket()
 		);
 
 		assertTrue(theInstance instanceof LocalDataStore);
-		assertTrue(((BaseClass)theInstance).isInitialized());
+		assertTrue(((BaseClass) theInstance).isInitialized());
 	}
 
 	@Test

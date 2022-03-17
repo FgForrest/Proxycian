@@ -2,7 +2,7 @@ package one.edee.oss.proxycian.trait.beanMemoryStore;
 
 import one.edee.oss.proxycian.MethodClassification;
 import one.edee.oss.proxycian.PredicateMethodClassification;
-import one.edee.oss.proxycian.recipe.IntroductionAdvice;
+import one.edee.oss.proxycian.recipe.Advice;
 import one.edee.oss.proxycian.trait.localDataStore.LocalDataStore;
 import org.apache.commons.lang.StringUtils;
 
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -21,7 +20,8 @@ import static java.util.Optional.ofNullable;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2021
  */
-public class BeanMemoryStoreAdvice implements IntroductionAdvice<BeanMemoryStore> {
+public class BeanMemoryStoreAdvice implements Advice<BeanMemoryStore> {
+	private static final long serialVersionUID = 4100044042153442374L;
 	/**
 	 * This instance matches all Java bean methods regardless of being implemented or not.
 	 */
@@ -39,11 +39,6 @@ public class BeanMemoryStoreAdvice implements IntroductionAdvice<BeanMemoryStore
 
 	private BeanMemoryStoreAdvice(Predicate<Method> basePredicate) {
 		this.basePredicate = basePredicate;
-	}
-
-	@Override
-	public List<Class<?>> getInterfacesToImplement() {
-		return Collections.singletonList(LocalDataStore.class);
 	}
 
 	@Override
@@ -130,8 +125,8 @@ public class BeanMemoryStoreAdvice implements IntroductionAdvice<BeanMemoryStore
 			),
 			new PredicateMethodClassification<>(
 				/* description */   "remove from list returning boolean",
-				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(ADD) && method.getParameterCount() == 1 && method.getReturnType().equals(boolean.class),
-				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(ADD.length())) + "s",
+				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(REMOVE) && method.getParameterCount() == 1 && method.getReturnType().equals(boolean.class),
+				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(REMOVE.length())) + "s",
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
 				proxyState.removeValueFromCollectionInMemoryStore(methodContext, (Serializable) args[0])
 			)
