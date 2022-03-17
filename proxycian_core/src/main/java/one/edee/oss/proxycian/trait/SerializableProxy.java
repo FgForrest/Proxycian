@@ -46,6 +46,14 @@ public interface SerializableProxy extends Serializable {
 	 * automatically.
 	 */
 	static Class<?>[] combineInterfaces(Class<?> superclass, Class<?>[] interfaces, Set<Class<?>> excludedClasses) {
+		System.out.println("Superclass: " + superclass.getName());
+		for (Class<?> anInterface : interfaces) {
+			System.out.println("Interface: " + anInterface);
+		}
+		for (Class<?> excludedClass : excludedClasses) {
+			System.out.println("Excluded: " + excludedClass.getName());
+		}
+
 		final List<Class<?>> combined = new LinkedList<>();
 		if (!Object.class.equals(superclass) && !excludedClasses.contains(superclass)) {
 			combined.add(superclass);
@@ -55,6 +63,11 @@ public interface SerializableProxy extends Serializable {
 				combined.add(anInterface);
 			}
 		}
+
+		for (Class<?> aClass : combined) {
+			System.out.println("Combined: " + aClass.getName());
+		}
+
 		return combined.toArray(new Class[0]);
 	}
 
