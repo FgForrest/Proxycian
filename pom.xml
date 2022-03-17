@@ -138,7 +138,6 @@
 				<version>3.0.0</version>
 				<executions>
 					<execution>
-						<phase>validate</phase>
 						<goals>
 							<goal>toolchain</goal>
 						</goals>
