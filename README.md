@@ -1,0 +1,2 @@
+# Proxycian
+Small Java library for generating dynamic proxies on top of ByteBuddy or Javassist. You can generate data transfer objects, rich traits or even whole implicit DAO implimentations dynamically at runtime easily. This library solves the complex stuff so you can focus on application logic. Serializability, cloning are already solved by us. We also aim for transparent and easily debuggable proxies, because as we know proxies is usually part of "magic" for the team. Hence the name of this library - Proxycian as a magician for the proxies ;)
