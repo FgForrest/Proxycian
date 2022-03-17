@@ -1,0 +1,58 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>proxycian_javassist</artifactId>
+    <packaging>jar</packaging>
+    <name>JavAssist proxy implementation</name>
+
+	<parent>
+		<groupId>one.edee.oss</groupId>
+		<artifactId>proxycian</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+    <dependencies>
+	    <dependency>
+		    <groupId>${project.groupId}</groupId>
+		    <artifactId>proxycian_core</artifactId>
+		    <version>${project.version}</version>
+	    </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.28.0-GA</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+	        <plugin>
+		        <groupId>org.sonatype.plugins</groupId>
+		        <artifactId>jarjar-maven-plugin</artifactId>
+		        <version>1.9</version>
+		        <executions>
+			        <execution>
+				        <phase>package</phase>
+				        <goals>
+					        <goal>jarjar</goal>
+				        </goals>
+				        <configuration>
+					        <overwrite>true</overwrite>
+					        <includes>
+						        <include>org.javassist:javassist</include>
+					        </includes>
+					        <rules>
+						        <rule>
+							        <pattern>javassist.**</pattern>
+							        <result>com.fg.edee.proxy.internal.javassist.@1</result>
+						        </rule>
+					        </rules>
+				        </configuration>
+			        </execution>
+		        </executions>
+	        </plugin>
+        </plugins>
+    </build>
+
+</project>
