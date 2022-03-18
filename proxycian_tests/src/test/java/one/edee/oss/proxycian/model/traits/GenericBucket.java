@@ -74,9 +74,9 @@ public class GenericBucket implements ProxyStateWithConstructorArgs, LocalDataSt
 	}
 
 	@Override
-	public <T extends Serializable> void addValueToCollectionInMemoryStore(String name, T value) {
+	public <T extends Serializable> boolean addValueToCollectionInMemoryStore(String name, T value) {
 		final List<T> dataStore = (List<T>) getOrCreateLocalDataStore().computeIfAbsent(name, s -> new LinkedList<>());
-		dataStore.add(value);
+		return dataStore.add(value);
 	}
 
 	@Override

@@ -124,11 +124,26 @@ public class BeanMemoryStoreAdvice implements Advice<BeanMemoryStore> {
 				}
 			),
 			new PredicateMethodClassification<>(
+				/* description */   "add to list returning boolean",
+				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(ADD) && method.getParameterCount() == 1 && method.getReturnType().equals(boolean.class),
+				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(ADD.length())) + "s",
+				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> proxyState.addValueToCollectionInMemoryStore(methodContext, (Serializable) args[0])
+			),
+			new PredicateMethodClassification<>(
 				/* description */   "remove from list returning boolean",
 				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(REMOVE) && method.getParameterCount() == 1 && method.getReturnType().equals(boolean.class),
 				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(REMOVE.length())) + "s",
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
 				proxyState.removeValueFromCollectionInMemoryStore(methodContext, (Serializable) args[0])
+			),
+			new PredicateMethodClassification<>(
+				/* description */   "remove from list returning void",
+				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(REMOVE) && method.getParameterCount() == 1 && method.getReturnType().equals(void.class),
+				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(REMOVE.length())) + "s",
+				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> {
+					proxyState.removeValueFromCollectionInMemoryStore(methodContext, (Serializable) args[0]);
+					return null;
+				}
 			)
 		);
 	}

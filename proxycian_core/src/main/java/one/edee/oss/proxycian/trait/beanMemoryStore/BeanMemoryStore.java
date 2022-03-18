@@ -12,34 +12,22 @@ public interface BeanMemoryStore {
 
 	/**
 	 * Stores data to memory store under the passed name.
-	 * @param name
-	 * @param value
-	 * @param <T>
 	 */
 	<T extends Serializable> void putValueToMemoryStore(String name, T value);
 
 	/**
 	 * Returns data stored in memory store under the passed name.
-	 * @param name
-	 * @param <T>
-	 * @return
 	 */
 	<T extends Serializable> T getValueFromMemoryStore(String name);
 
 	/**
 	 * Adds new item to the collection stored in memory under the passed name.
-	 * @param <T>
-	 * @return
 	 */
-	<T extends Serializable> void addValueToCollectionInMemoryStore(String name, T value);
+	<T extends Serializable> boolean addValueToCollectionInMemoryStore(String name, T value);
 
 	/**
 	 * Removes item from the collection stored in memory under the passed name and returns TRUE if the item was
 	 * successfully removed, FALSE otherwise.
-	 * @param name
-	 * @param value
-	 * @param <T>
-	 * @return
 	 */
 	<T extends Serializable> boolean removeValueFromCollectionInMemoryStore(String name, T value);
 }

@@ -10,6 +10,9 @@ import one.edee.oss.proxycian.trait.ProxyStateAccessor;
 import one.edee.oss.proxycian.trait.beanMemoryStore.BeanMemoryStoreAdvice;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -102,6 +105,30 @@ public class BeanMemoryStoreAdviceTest extends AbstractByteBuddyProxycianTest {
 		assertEquals("Jan Novotný (43)", proxy.print());
 	}
 
+	@Test
+	public void shouldProxyJavaBeanWithMultipleItems() {
+		final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
+			new ProxyRecipe(
+				new Class[] {JavaBeanWithMultipleItems.class},
+				new Advice[] {BeanMemoryStoreAdvice.ALL_METHOD_INSTANCE}
+			),
+			new GenericBucket()
+		);
+
+		assertTrue(theInstance instanceof JavaBeanWithMultipleItems);
+		final JavaBeanWithMultipleItems proxy = (JavaBeanWithMultipleItems) theInstance;
+
+		proxy.addItem("A");
+		proxy.addItem("B");
+		proxy.addItem("C");
+
+		assertArrayEquals(new String[] {"A", "B", "C"}, proxy.getItems().toArray(new String[0]));
+
+		proxy.removeItem("B");
+
+		assertArrayEquals(new String[] {"A", "C"}, proxy.getItems().toArray(new String[0]));
+	}
+
 	public interface SomeJavaBeanIface extends Cloneable {
 
 		boolean isLiving();
@@ -147,6 +174,18 @@ public class BeanMemoryStoreAdviceTest extends AbstractByteBuddyProxycianTest {
 				throw new IllegalStateException(e);
 			}
 		}
+	}
+
+	public interface JavaBeanWithMultipleItems {
+
+		List<String> getItems();
+
+		void setItems(List<String> items);
+
+		void addItem(String item);
+
+		void removeItem(String item);
+
 	}
 
 }

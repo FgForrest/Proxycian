@@ -260,6 +260,12 @@ in debugging sessions, it has no other real usage in the Proxycian
 **2. matcher** - represents simple predicate that accepts `java.lang.Method` and reference to the proxy state object
 and returns TRUE if this method classifier intercepts this method call
 
+***Note:** you can use static helper methods in `one.edee.oss.proxycian.util.ReflectionUtils` interface in your predicate.
+For example if you want to check whether the called method is the same method in certain interface you can use this
+expression: `ReflectionUtils.isMethodDeclaredOn(method, LocalDataStore.class, "getLocalData", String.class)` where
+`method` is the called method, `LocalDataStore.class` is the checked interface, `"getLocalData"` is the name of the
+method in the interface and `String.class` is the single method parameter. You can find more handy methods here as well.*
+
 **3. method context** - represents function that takes `java.lang.Method` and reference to the proxy state object and
 returns DTO object that contains extracted information from the method signature that is necessary for the implementation
 logic, the DTO is created only for the first call and cached so all additional method calls will reuse this method context.
@@ -268,12 +274,24 @@ It may therefore contain rather complex logic without fear of affecting proxy me
 **4. method implementation** - the last piece of puzzle will provide the final logic for the method, this is the only
 part executed everytime the proxy method is called
 
+***Note:** if you want to invoke the original method (for example you want only to something before / after the original
+method executes), use expression: `return invokeSuper.call()`*
+
 The method call interception logic is straight forward - when method on proxy is called for the first time we need to 
 resolve the proper implementation. The Proxycian will iterate over all advices and within them over all the method 
 classifiers the advice provides and select **the first** method classifier which predicate returns true. If predicates
 of your advices overlap (the very same method might be intercepted and handled by Advice1 as well as Advice2) the Advice
 which is defined first wins. The predicates may overlap even within single advice, so even the order in which you specify
-method classifiers is crucial.
+method classifiers is crucial. There are also "system methods" that are automatically handled by the Proxycian and these
+have their own priority. The ordering of the method classifier is as follows:
+
+1. `Object#hashCode()`
+2. `Object#equals()`
+3. `Object#toString()`
+4. `Object#clone()`
+5. `ProxyStateAccessor#getProxyState()`
+6. all your method classifiers
+7. when method is still not classified original method will be invoked - if its "abstract" the call will fail
 
 When method classifier is selected, function that creates method context is called and its result is cached into the
 `ByteBuddyProxyGenerator` method cache for the key `one.edee.oss.proxycian.cache.ClassMethodCacheKey`. Finally,
@@ -308,9 +326,186 @@ new DirectMethodClassification<>(
 )
 ```
 
+So if your method signature analysis is complex, and you would need to do the same operations both in predicate and
+the execution function - use `DirectMethodClassification` otherwise stick to the `PredicateMethodClassification`.
+
 #### State object
 
 State object is the target for all Java base methods such as `equals`, `hashCode`, `toString`, serialization and clone 
 facility. We have single state object on purpose - it's much easier to track, debug and control data this way. The state 
 object must fulfill the contract required by all the Advices of the proxy (do not confuse the contract required by the 
-advices with the contract of the proxy itself!).
+advices with the contract of the proxy itself!). The state object lives with the proxy instance and gets garbage 
+collected with it.
+
+There is no required interface for the state object if you create NON-serializable instance of the class. However, if
+you need an instance, that can be serialized using default Java serialization facility, you must implement 
+`ProxyStateWithConstructorArgs` interface. The state itself must be Serializable and must allow keeping the original
+constructor arguments used for instance creation so that they can be reused in deserialization phase.
+
+### Instantiation callback
+
+There are certain use-case when you have to "prepare" the instance immediately after creation, even before the method
+classification logic gets in the way. For such case there is `one.edee.oss.proxycian.OnInstantiationCallback` you can 
+implement and pass to the instantiation method. In this callback you can freely invoke method of the instance and no
+dynamic logic stated in advices will be executed. Of course, calling abstract methods will trigger an exception.
+
+## Prepared traits ready to use
+
+### BeanMemoryStoreAdvice
+
+This advice will intercept all method calls that follow [Java Beans](https://en.wikipedia.org/wiki/JavaBeans) contract
+and stores the date into internal `HashMap` in the proxy state. This map can be accessed via. expression:
+`((BeanMemoryStore)((ProxyStateAccessor)instance).getProxyState()).getLocalDataStoreIfPresent()`. In addition to 
+standard Java Beans contract there is support for adding and removing 1:N items one by one. See example interface:
+
+```java
+public interface JavaBeanWithMultipleItems {
+	List<String> getItems();
+	void setItems(List<String> items);
+	boolean addItem(String item);
+	boolean removeItem(String item);
+}
+```
+
+The behaviour describes following test case:
+
+```java
+@Test
+public void shouldProxyJavaBeanWithMultipleItems() {
+	final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
+		new ProxyRecipe(
+			new Class[] {JavaBeanWithMultipleItems.class},
+			new Advice[] {BeanMemoryStoreAdvice.ALL_METHOD_INSTANCE}
+		),
+		new GenericBucket()
+	);
+
+	assertTrue(theInstance instanceof JavaBeanWithMultipleItems);
+	final JavaBeanWithMultipleItems proxy = (JavaBeanWithMultipleItems) theInstance;
+
+	proxy.addItem("A");
+	proxy.addItem("B");
+	proxy.addItem("C");
+
+	assertArrayEquals(new String[] {"A", "B", "C"}, proxy.getItems().toArray(new String[0]));
+
+	proxy.removeItem("B");
+
+	assertArrayEquals(new String[] {"A", "C"}, proxy.getItems().toArray(new String[0]));
+}
+```
+
+### LocalDataStoreAdvice
+
+This is handy advice that allows you to store any data from execution functions or even default methods of 
+your interfaces. See contract of `LocalDataStore` interface for more information.
+
+If you add this advice to your dynamic proxy, you can then define multiple other "traits" that are merely interfaces
+with default methods that can take advantage of the internal memory store to become "stateful". See following example:
+
+```java
+public interface ExpensiveComputer extends LocalDataStore {
+
+  default double computePi() {
+    return computeLocalDataIfAbsent("cachedPi", () -> {
+      double pi = 0;
+      for (int i = 1; i < 1_000_000; i++) {
+        pi += Math.pow(-1, i+1) / (2 * i - 1);
+      }
+      return 4 * pi;
+    });
+  }
+
+}
+```
+
+You can add `ExpensiveComputed` to any dynamic proxy having `LocalDataStoreAdvice` and you will an object that 
+will return computed PI to 1 mil. iterations. As you can see the expensive computation will happen only once on that
+instance of dynamic proxy, because next time you call that method you'll receive memoized value from the first call.
+
+### DelegateCallsAdvice
+
+This advice lets you delegate calls to all methods of single interface directly to the state object or the object that
+is reachable from the state object. This allows you to compose multiple interface delegations at once. Beware this
+example is quite long (to shorten it a little bit we use [Lombok](https://projectlombok.org/) annotations in it):
+
+```java
+public interface NameInterface {
+
+	String getFullName();
+
+	String getFirstName();
+	String getLastName();
+
+	void setFirstName(String firstName);
+	void setLastName(String lastName);
+
+}
+
+@Data
+public static class NameImplementation implements Serializable, NameInterface {
+	private static final long serialVersionUID = -3190496823269251991L;
+	private String firstName;
+	private String lastName;
+
+	public String getFullName() {
+		return firstName + " " + lastName;
+	}
+
+}
+
+public interface AgeInterface {
+
+	int getAge();
+	void setAge(int ageInYears);
+
+}
+
+@Data
+public static class AgeImplementation implements Serializable, AgeInterface {
+	private static final long serialVersionUID = -2520784598151746890L;
+	private int age;
+}
+
+public interface PersonInterface {
+
+	String getPersonDescription();
+
+}
+
+@Data
+public static class CompositionState implements Serializable, PersonInterface {
+	private static final long serialVersionUID = 3427985599976732264L;
+	private final NameImplementation nameHolder = new NameImplementation();
+	private final AgeImplementation ageHolder = new AgeImplementation();
+
+	@Override
+	public String getPersonDescription() {
+		return nameHolder.getFullName() + " of age " + ageHolder.getAge();
+	}
+}
+
+  @Test
+  public void ByteBuddyProxyRecipeGenerator_DelegateCallsOnSubProperty() {
+    final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
+            new ProxyRecipe(
+                    DelegateCallsAdvice.getInstance(NameInterface.class, o -> ((CompositionState)o).getNameHolder()),
+                    DelegateCallsAdvice.getInstance(AgeInterface.class, o -> ((CompositionState)o).getAgeHolder()),
+                    DelegateCallsAdvice.getInstance(PersonInterface.class)
+            ),
+            new CompositionState()
+    );
+
+    assertTrue(theInstance instanceof NameInterface);
+    final NameInterface nameProxyContract = (NameInterface) theInstance;
+    nameProxyContract.setFirstName("Jan");
+    nameProxyContract.setLastName("Novotný");
+
+    assertTrue(theInstance instanceof AgeInterface);
+    final AgeInterface ageProxyContract = (AgeInterface) theInstance;
+    ageProxyContract.setAge(43);
+
+    assertTrue(theInstance instanceof PersonInterface);
+    assertEquals("Jan Novotný of age 43", ((PersonInterface)theInstance).getPersonDescription());
+  }
+```

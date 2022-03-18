@@ -23,13 +23,13 @@ public class DelegateCallsAdviceTest extends AbstractByteBuddyProxycianTest {
 	public void ByteBuddyProxyRecipeGenerator_DelegateCalls() {
 		final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
-				DelegateCallsAdvice.getInstance(SomePojo.class)
+				DelegateCallsAdvice.getInstance(NameImplementation.class)
 			),
-			new SomePojo()
+			new NameImplementation()
 		);
 
-		assertTrue(theInstance instanceof PojoInterface);
-		final PojoInterface proxy = (PojoInterface) theInstance;
+		assertTrue(theInstance instanceof NameInterface);
+		final NameInterface proxy = (NameInterface) theInstance;
 
 		proxy.setFirstName("Jan");
 		proxy.setLastName("Novotný");
@@ -40,51 +40,79 @@ public class DelegateCallsAdviceTest extends AbstractByteBuddyProxycianTest {
 	public void ByteBuddyProxyRecipeGenerator_DelegateCallsOnSubProperty() {
 		final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
-				DelegateCallsAdvice.getInstance(SomePojo.class, o -> ((BroaderState)o).getSomePojo())
+				DelegateCallsAdvice.getInstance(NameInterface.class, o -> ((CompositionState)o).getNameHolder()),
+				DelegateCallsAdvice.getInstance(AgeInterface.class, o -> ((CompositionState)o).getAgeHolder()),
+				DelegateCallsAdvice.getInstance(PersonInterface.class)
 			),
-			new BroaderState()
+			new CompositionState()
 		);
 
-		assertTrue(theInstance instanceof PojoInterface);
-		final PojoInterface proxy = (PojoInterface) theInstance;
+		assertTrue(theInstance instanceof NameInterface);
+		final NameInterface nameProxyContract = (NameInterface) theInstance;
+		nameProxyContract.setFirstName("Jan");
+		nameProxyContract.setLastName("Novotný");
 
-		proxy.setFirstName("Jan");
-		proxy.setLastName("Novotný");
-		assertEquals("Jan Novotný", proxy.getFullName());
+		assertTrue(theInstance instanceof AgeInterface);
+		final AgeInterface ageProxyContract = (AgeInterface) theInstance;
+		ageProxyContract.setAge(43);
+
+		assertTrue(theInstance instanceof PersonInterface);
+		assertEquals("Jan Novotný of age 43", ((PersonInterface)theInstance).getPersonDescription());
+	}
+
+	public interface NameInterface {
+
+		String getFullName();
+
+		String getFirstName();
+		String getLastName();
+
+		void setFirstName(String firstName);
+		void setLastName(String lastName);
+
 	}
 
 	@Data
-	public static class SomePojo implements Serializable, PojoInterface {
+	public static class NameImplementation implements Serializable, NameInterface {
 		private static final long serialVersionUID = -3190496823269251991L;
 		private String firstName;
 		private String lastName;
 
-		@Override
 		public String getFullName() {
 			return firstName + " " + lastName;
 		}
 
 	}
 
-	@Data
-	public static class BroaderState implements Serializable {
-		private static final long serialVersionUID = 3427985599976732264L;
-		private final SomePojo somePojo = new SomePojo();
+	public interface AgeInterface {
+
+		int getAge();
+		void setAge(int ageInYears);
 
 	}
 
-	public interface PojoInterface {
+	@Data
+	public static class AgeImplementation implements Serializable, AgeInterface {
+		private static final long serialVersionUID = -2520784598151746890L;
+		private int age;
+	}
 
-		String getFullName();
+	public interface PersonInterface {
 
-		String getFirstName();
+		String getPersonDescription();
 
-		String getLastName();
+	}
 
-		void setFirstName(String firstName);
+	@Data
+	public static class CompositionState implements Serializable, PersonInterface {
+		private static final long serialVersionUID = 3427985599976732264L;
+		private final NameImplementation nameHolder = new NameImplementation();
+		private final AgeImplementation ageHolder = new AgeImplementation();
 
-		void setLastName(String lastName);
-
+		@Override
+		public String getPersonDescription() {
+			return nameHolder.getFullName() + " of age " + ageHolder.getAge();
+		}
 	}
 
 }
