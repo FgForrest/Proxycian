@@ -197,7 +197,7 @@ method as you see in the example.*
 #### Advice
 
 Advice is **strictly** stateless and if you create a new Advice, we recommend defining the no instance fields,
-creating private non-args constructors and providing a single public static field INSTANCE, which provides access to the
+creating private non-args constructor and providing a single public static field INSTANCE, which provides access to the
 advice instance (as you see in the example: `LocalDataStoreAdvice.INSTANCE`).
 
 There are two different kind of Advices:
