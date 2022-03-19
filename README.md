@@ -331,7 +331,7 @@ the execution function - use `DirectMethodClassification` otherwise stick to the
 
 #### State object
 
-State object is the target for all Java base methods, such as `equals`, `hashCode`, `toString`and the serialization and clone 
+State object is the target for all Java base methods, such as `equals`, `hashCode`, `toString` and the serialization and clone 
 facility. We have single state objects on purpose - it's much easier to track, debug and control data this way. The state of the
 object must fulfill the contract required by all the Advices of the proxy (do not confuse the contract required by the 
 advices with the contract of the proxy itself!). The state object lives with the proxy instance and gets garbage 
@@ -419,7 +419,7 @@ public interface ExpensiveComputer extends LocalDataStore {
 }
 ```
 
-You can add `ExpensiveComputed` to any dynamic proxy, now having `LocalDataStoreAdvice`, and you will have an object that 
+You can add `ExpensiveComputed` to any dynamic proxy, that have `LocalDataStoreAdvice`, and you will have an object that 
 will return a computed PI to 1 mil. iterations. As you can see the expensive computation will happen only once on that
 instance of dynamic proxy, because next time you call that method you'll receive memoized value from the first call.
 
