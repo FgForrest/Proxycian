@@ -202,8 +202,8 @@ advice instance (as you see in the example: `LocalDataStoreAdvice.INSTANCE`).
 
 There are two different kind of Advices:
 
-- regular `Advice`: the advice only defines the filters for methods it intercepts, and the implementation of thems
-  See example advice `one.edee.oss.proxycian.trait.beanMemoryStore.BeanMemoryStoreAdvice`
+- regular `Advice`: the advice only defines the filters for methods it intercepts, and the implementation of them;
+  see example advice `one.edee.oss.proxycian.trait.beanMemoryStore.BeanMemoryStoreAdvice`
 - `IntroductionAdvice`: is the same as regular advice but also introduces a new interface (or set of interfaces) to the proxy;
   this means that it is not necessary to state this interface in the ProxyRecipe explicitly, but it will be automatically
   added to the proxy contract whenever the IntroductionAdvice is part of the recipe
