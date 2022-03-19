@@ -260,8 +260,8 @@ in debugging sessions, it has no other real usage in the Proxycian.
 **2. matcher** - represents a simple predicate that accepts `java.lang.Method` and a reference to the proxy state object,
 and returns TRUE if this method classifier intercepts this method call.
 
-***Note:** you can use static helper methods in `one.edee.oss.proxycian.util.ReflectionUtils` interfaces in your predicate.
-For example if you want to check whether the called method is the same method, in certain interfaces you can use this
+***Note:** you can use static helper methods in `one.edee.oss.proxycian.util.ReflectionUtils` interface in your predicate.
+For example if you want to check whether the called method is the same method in particular interface, you can use this
 expression: `ReflectionUtils.isMethodDeclaredOn(method, LocalDataStore.class, "getLocalData", String.class)` where
 `method` is the called method, `LocalDataStore.class` is the checked interface, `"getLocalData"` is the name of the
 method in the interface and `String.class` is the single method parameter. You can find more handy methods here as well.*
