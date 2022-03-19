@@ -21,7 +21,7 @@ from scratch and based on current and actively developed libraries and with the 
 - simplicity
 - clear and transparent classes / method implementation caching
 - debuggability - you just want your debugger to step in the dynamic implementation without much fuss around
-- transparency - you can to easily find out why the library chose the implementation it chose
+- transparency - you can easily find out why the library chose the implementation it chose
 
 Let us know if we achieved our goals or not. Opinions and feedback is welcome.
 
@@ -59,7 +59,7 @@ our developers and soon there were situations when two modules might have needed
 This is a sign of poorly architected modules, but life brings situations when a circular dependency might
 resemble the least of all evils.
 
-Proxycian allows us to create a dynamic proxy, which implements required interfaces and uses it for immediate wiring by 
+Proxycian allows us to create a dynamic proxy, which implements required interfaces and use it for immediate wiring by 
 the dependency injection mechanism. The module has its requirement fulfilled and can be started. Any call to the proxy
 method will end with an exception, but we usually need to call method after entire system starts. As soon the other
 module that provides the interface starts, the proxy internal state is filled with a reference to 
