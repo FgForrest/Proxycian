@@ -304,7 +304,7 @@ classification can also add custom data to the method cache key, should it be ne
 
 ##### DirectMethodClassification
 
-This implementation is similar to `PredicateMethodClassification` in it's principle. It just combines the predicate with the 
+This implementation is similar to `PredicateMethodClassification` in its principle. It just combines the predicate with the 
 method context creation together. These two aspects of the method classification contract are some time very similar and
 might be quite expensive. It makes sense to support this approach as well, so that the same logic can be used for matching
 the method as well as creating method context for it.
