@@ -293,7 +293,7 @@ have their own priority. The ordering of the method classifier is as follows:
 6. all your method classifiers
 7. when method is still not classified, the original method will be invoked - if it is "abstract", the call will fail
 
-When method classifier is selected, a function that creates method context is called and it's result is cached into the
+When method classifier is selected, a function that creates method context is called and its result is cached into the
 `ByteBuddyProxyGenerator` method cache for the key `one.edee.oss.proxycian.cache.ClassMethodCacheKey`. Finally,
 the implementation part is executed. Next time the same method is called (maybe on another instance of the same proxy class),
 the implementation with method context is quickly retrieved from the internal hash map and executed. With each call on the
