@@ -4,7 +4,7 @@
 	<groupId>one.edee.oss</groupId>
 	<artifactId>proxycian</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.4</version>
 	<name>JavAssist proxying - aggregation project</name>
 	<url>https://github.com/FgForrest/Proxycian/</url>
 	<description>
@@ -59,7 +59,7 @@
 		<connection>scm:git:ssh://git@github.com:FgForrest/Proxycian</connection>
 		<developerConnection>scm:git:ssh://git@github.com:FgForrest/Proxycian</developerConnection>
 		<url>https://edee.dev/</url>
-		<tag>HEAD</tag>
+		<tag>proxycian-1.0.4</tag>
 	</scm>
 
 	<organization>
