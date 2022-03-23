@@ -19,6 +19,7 @@ import one.edee.oss.proxycian.trait.SerializableProxy.DeserializationProxyFactor
 import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -290,9 +291,18 @@ public class JavassistProxyGenerator {
 			// LAMBDA THAT FINDS OUT MISSING CONSTRUCTOR
 			aClass -> {
 				try {
-					return aClass.getClazz().getConstructor();
+					final Constructor<?> constructor = aClass.getClazz().getDeclaredConstructor();
+					if (Modifier.isPrivate(constructor.getModifiers())) {
+						throw new NoSuchMethodException();
+					}
+					if (Modifier.isProtected(constructor.getModifiers())) {
+						constructor.setAccessible(true);
+					}
+					return constructor;
 				} catch (NoSuchMethodException e) {
-					throw new IllegalArgumentException("What the heck? Can't find default constructor on abstract class: " + e.getMessage(), e);
+					throw new IllegalArgumentException(
+						"What the heck? Can't find default public/protected constructor on abstract class: " + e.getMessage(), e
+					);
 				}
 			}
 		);
@@ -307,10 +317,17 @@ public class JavassistProxyGenerator {
 			// LAMBDA THAT FINDS OUT MISSING CONSTRUCTOR
 			aClass -> {
 				try {
-					return aClass.getClazz().getConstructor(aClass.getArgumentTypes());
+					final Constructor<?> constructor = aClass.getClazz().getDeclaredConstructor(aClass.getArgumentTypes());
+					if (Modifier.isPrivate(constructor.getModifiers())) {
+						throw new NoSuchMethodException();
+					}
+					if (Modifier.isProtected(constructor.getModifiers())) {
+						constructor.setAccessible(true);
+					}
+					return constructor;
 				} catch (NoSuchMethodException e) {
 					throw new IllegalArgumentException(
-						"What the heck? Can't find constructor with arguments " +
+						"What the heck? Can't find public/protected constructor with arguments " +
 							Arrays.stream(constructorArgs).map(Class::toGenericString).collect(Collectors.joining(", ")) +
 							" on abstract class: " + e.getMessage(), e
 					);

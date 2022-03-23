@@ -516,9 +516,16 @@ public class ByteBuddyProxyGenerator {
 			// LAMBDA THAT FINDS OUT MISSING CONSTRUCTOR
 			aClass -> {
 				try {
-					return aClass.getClazz().getConstructor();
+					final Constructor<?> constructor = aClass.getClazz().getDeclaredConstructor();
+					if (Modifier.isPrivate(constructor.getModifiers())) {
+						throw new NoSuchMethodException();
+					}
+					if (Modifier.isProtected(constructor.getModifiers())) {
+						constructor.setAccessible(true);
+					}
+					return constructor;
 				} catch (NoSuchMethodException e) {
-					throw new IllegalArgumentException("What the heck? Can't find default public constructor on abstract class: " + e.getMessage(), e);
+					throw new IllegalArgumentException("What the heck? Can't find default public/protected constructor on abstract class: " + e.getMessage(), e);
 				}
 			}
 		);
@@ -533,10 +540,17 @@ public class ByteBuddyProxyGenerator {
 			// LAMBDA THAT FINDS OUT MISSING CONSTRUCTOR
 			aClass -> {
 				try {
-					return aClass.getClazz().getConstructor(aClass.getArgumentTypes());
+					final Constructor<?> constructor = aClass.getClazz().getDeclaredConstructor(aClass.getArgumentTypes());
+					if (Modifier.isPrivate(constructor.getModifiers())) {
+						throw new NoSuchMethodException();
+					}
+					if (Modifier.isProtected(constructor.getModifiers())) {
+						constructor.setAccessible(true);
+					}
+					return constructor;
 				} catch (NoSuchMethodException e) {
 					throw new IllegalArgumentException(
-						"What the heck? Can't find public constructor with arguments " +
+						"What the heck? Can't find public/protected constructor with arguments " +
 							Arrays.stream(constructorArgs).map(Class::toGenericString).collect(Collectors.joining(", ")) +
 							" on abstract class: " + e.getMessage(), e
 					);
