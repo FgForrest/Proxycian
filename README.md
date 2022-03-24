@@ -250,7 +250,7 @@ This advice reacts to a method call with following the signature `String helloWo
 `proxy.helloWorld("Jan")` returns `Hello world, Jan` in response. Advice provides a set of so called `MethodClassification`
 that are used to intercept the proper methods on a proxy interface. There are two types of method classifications:
 
-##### PredicateMethodClassification
+##### PredicateMethodClassification / TransparentPredicateMethodClassification
 
 The classification consists of 4 parts:
 
@@ -275,13 +275,19 @@ It may therefore contain rather complex logic without fear of affecting proxy me
 part executed everytime the proxy method is called
 
 ***Note:** if you want to invoke the original method (for example you want only to do something before / after the original
-method executes), use expression: `return invokeSuper.call()`, using this expression all method classifiers later in the
-chain (should there be any) will be invoked as well.*
+method executes), use expression: `return invokeSuper.call()`*
 
 The method call interception logic is straightforward - when a method on a proxy is called for the first time, we need to 
 resolve the proper implementation. The Proxycian will iterate over all advices and within them, over all the method 
-classifiers, the advice provides and selects all method classifiers, which predicate returns true in the same order
-as they are specified in advice listing and the order of method classification within the advice.
+classifiers, the advice provides and selects **the first** method classifier, which predicate returns true. If predicates
+of your advices overlap (the very same method might be intercepted and handled by Advice1 as well as Advice2), the Advice
+which is defined first wins. The predicates may overlap even within single advice, so even the order in which you specify
+method classifiers is crucial.
+
+This rule can be changed, however. If you use `Transparent` variants of `MethodClassification` - i.e. those that implement
+`TransparentMethodClassification` interface, the examination continues with additional advices and creates a method invoker
+chain. Transparent advice may in its execution function use `return invokeSuper.call()` expression to delegate call to
+additionally selected method invocation.
 
 There are also "system methods" that are automatically handled by the Proxycian and these have their own priority. 
 The ordering of the method classifier is as follows:
@@ -303,7 +309,7 @@ proxy instance, you pay the price of a single lookup to the hash map and delegat
 Method cache can be reset at any time by calling `ByteBuddyProxyGenerator.clearMethodClassificationCache()`. Your method
 classification can also add custom data to the method cache key, should it be necessary.
 
-##### DirectMethodClassification
+##### DirectMethodClassification / TransparentDirectMethodClassification
 
 This implementation is similar to `PredicateMethodClassification` in its principle. It just combines the predicate with the 
 method context creation together. These two aspects of the method classification contract are some time very similar and

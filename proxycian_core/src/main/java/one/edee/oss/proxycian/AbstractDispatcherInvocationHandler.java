@@ -6,6 +6,7 @@ import one.edee.oss.proxycian.trait.ProxyStateAccessor;
 import one.edee.oss.proxycian.trait.StandardJavaMethods;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 public abstract class AbstractDispatcherInvocationHandler<T> implements DispatcherInvocationHandler {
 	/* proxyState object unique to each proxy instance */
@@ -62,29 +62,28 @@ public abstract class AbstractDispatcherInvocationHandler<T> implements Dispatch
 
 	@SuppressWarnings("unchecked")
 	protected <U> CurriedMethodContextInvocationHandler<U, T> getCurriedMethodContextInvocationHandler(Method method) {
-		final List<CurriedMethodContextInvocationHandler<U, T>> matchingHandlers = methodClassifications.stream()
+		final List<CurriedMethodContextInvocationHandler<U, T>> matchingHandlers = new LinkedList<>();
+		for (MethodClassification<?, ?> methodClassification : methodClassifications) {
 			//create curried invocation handler (invocation handler curried with method state)
-			.map(methodClassification -> ((MethodClassification<U, T>) methodClassification).createCurriedMethodContextInvocationHandler(method, proxyState))
+			final CurriedMethodContextInvocationHandler<U, T> curriedMethodInvocationHandler = ((MethodClassification<U, T>) methodClassification).createCurriedMethodContextInvocationHandler(method, proxyState);
 			//filter out empty results - NULL results means no match
-			.filter(Objects::nonNull)
-			// collect all
-			.collect(Collectors.toList());
+			if (curriedMethodInvocationHandler != null) {
+				matchingHandlers.add(curriedMethodInvocationHandler);
+				// matching method classifier is by default greedy - discarding all other classifiers in chain
+				// but this can be changed by @Continuing annotation
+				if (!(methodClassification instanceof TransparentMethodClassification)) {
+					break;
+				}
+			}
+		}
 
 		if (matchingHandlers.isEmpty()) {
 			//return missing invocation handler throwing exception
 			return StandardJavaMethods.missingImplementationInvoker();
+		} else if (matchingHandlers.size() == 1) {
+			return matchingHandlers.get(0);
 		} else {
-			final CurriedMethodContextInvocationHandler<U, T> topMatchingHandler = matchingHandlers.get(0);
-			if (matchingHandlers.size() == 1) {
-				return topMatchingHandler;
-			} else {
-				final ContinuationInvokeSuperFactory<U, T> invokeSuperFactory = new ContinuationInvokeSuperFactory<>(matchingHandlers);
-				return (proxy, interceptedMethod, args, proxyState, invokeSuper) ->
-					topMatchingHandler.invoke(
-						proxy, interceptedMethod, args, proxyState,
-						invokeSuperFactory.fabricate(proxy, interceptedMethod, args, proxyState, invokeSuper)
-					);
-			}
+			return fabricateComposedMethodInvocationHandler(matchingHandlers);
 		}
     }
 
@@ -92,20 +91,46 @@ public abstract class AbstractDispatcherInvocationHandler<T> implements Dispatch
 		return new ClassMethodCacheKey(aClass, proxyStateClazz, method, cacheKey);
 	}
 
-	@RequiredArgsConstructor
-	private static class ContinuationInvokeSuperFactory<PROXY, PROXY_STATE> {
-		private final List<CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE>> nestedClassifications;
+	public <PROXY, PROXY_STATE> CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> fabricateComposedMethodInvocationHandler(List<CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE>> nestedClassifications) {
+		CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> translatedInvoker = new TailMethodInvocationHandler<>(
+			nestedClassifications.get(nestedClassifications.size() - 1)
+		);
+		for (int i = nestedClassifications.size() - 2; i >= 0; i--) {
+			final CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> methodHandler = nestedClassifications.get(i);
+			translatedInvoker = new DelegatingMethodInvocationHandler<>(methodHandler, translatedInvoker);
+		}
+		return translatedInvoker;
+	}
 
-		public Callable<Object> fabricate(PROXY proxy, Method method, Object[] args, PROXY_STATE proxyState, Callable<Object> invokeSuper) {
-			Callable<Object> nestedInvokeSuper = invokeSuper;
-			for (int i = nestedClassifications.size() - 1; i > 0; i--) {
-				final CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> methodHandler = nestedClassifications.get(i);
-				final Callable<Object> finalNestedInvokeSuper = nestedInvokeSuper;
-				nestedInvokeSuper = () -> methodHandler.invoke(proxy, method, args, proxyState, finalNestedInvokeSuper);
-			}
-			return nestedInvokeSuper;
+	@RequiredArgsConstructor
+	private static class TailMethodInvocationHandler<PROXY, PROXY_STATE> implements CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> {
+		private final CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> delegate;
+
+		@Override
+		public Object invoke(PROXY proxy, Method method, Object[] args, PROXY_STATE proxy_state, Callable<Object> invokeSuper) throws InvocationTargetException {
+			return delegate.invoke(proxy, method, args, proxy_state, invokeSuper);
 		}
 
+		@Override
+		public String toString() {
+			return delegate.toString();
+		}
+	}
+
+	@RequiredArgsConstructor
+	private static class DelegatingMethodInvocationHandler<PROXY, PROXY_STATE> implements CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> {
+		private final CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> delegate;
+		private final CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> continuation;
+
+		@Override
+		public Object invoke(PROXY proxy, Method method, Object[] args, PROXY_STATE proxy_state, Callable<Object> invokeSuper) throws InvocationTargetException {
+			return delegate.invoke(proxy, method, args, proxy_state, () -> continuation.invoke(proxy, method, args, proxy_state, invokeSuper));
+		}
+
+		@Override
+		public String toString() {
+			return delegate.toString();
+		}
 	}
 
 }

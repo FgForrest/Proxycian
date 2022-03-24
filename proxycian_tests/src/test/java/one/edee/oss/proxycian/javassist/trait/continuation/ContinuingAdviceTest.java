@@ -3,7 +3,7 @@ package one.edee.oss.proxycian.javassist.trait.continuation;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import one.edee.oss.proxycian.MethodClassification;
-import one.edee.oss.proxycian.PredicateMethodClassification;
+import one.edee.oss.proxycian.TransparentPredicateMethodClassification;
 import one.edee.oss.proxycian.bytebuddy.AbstractByteBuddyProxycianTest;
 import one.edee.oss.proxycian.javassist.JavassistProxyGenerator;
 import one.edee.oss.proxycian.model.traits.GenericBucket;
@@ -84,7 +84,7 @@ public class ContinuingAdviceTest extends AbstractByteBuddyProxycianTest {
 		@Override
 		public List<MethodClassification<?, LocalDataStoreProvider>> getMethodClassification() {
 			return Collections.singletonList(
-				new PredicateMethodClassification<>(
+				new TransparentPredicateMethodClassification<>(
 					/* description */   "All methods catch",
 					/* matcher */       (method, proxyState) -> true,
 					/* methodContext */ noContext(),
@@ -120,7 +120,7 @@ public class ContinuingAdviceTest extends AbstractByteBuddyProxycianTest {
 		@Override
 		public List<MethodClassification<?, LocalDataStoreProvider>> getMethodClassification() {
 			return Collections.singletonList(
-				new PredicateMethodClassification<>(
+				new TransparentPredicateMethodClassification<>(
 					/* description */   "All methods catch",
 					/* matcher */       (method, proxyState) -> true,
 					/* methodContext */ noContext(),
