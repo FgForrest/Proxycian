@@ -4,6 +4,7 @@ package one.edee.oss.proxycian.trait;
 import one.edee.oss.proxycian.CurriedMethodContextInvocationHandler;
 import one.edee.oss.proxycian.PredicateMethodClassification;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import static one.edee.oss.proxycian.MethodClassification.noContext;
@@ -18,7 +19,13 @@ public interface StandardJavaMethods {
         /* description */   "delegate to default / super implementation",
         /* matcher */       (method, proxyState) -> !Modifier.isAbstract(method.getModifiers()) || method.isDefault(),
         /* methodContext */ noContext(),
-        /* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> invokeSuper.call()
+        /* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> {
+				try {
+					return invokeSuper.call();
+				} catch (Exception e) {
+					throw new InvocationTargetException(e);
+				}
+	        }
         );
     }
 
@@ -61,7 +68,13 @@ public interface StandardJavaMethods {
 			/* description */   "Object.clone(Object)",
 			/* matcher */       (method, proxyState) -> isNonPublicMethodDeclaredOn(method, Object.class, "clone"),
 			/* methodContext */ noContext(),
-			/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> cloner.clone(proxy)
+			/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> {
+					try {
+						return cloner.clone(proxy);
+					} catch (CloneNotSupportedException e) {
+						throw new InvocationTargetException(e);
+					}
+			}
 		);
 	}
 

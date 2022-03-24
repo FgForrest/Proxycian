@@ -1,13 +1,17 @@
 package one.edee.oss.proxycian.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.lang.reflect.Array;
 
 /**
- * No extra information provided - see (selfexplanatory) method signatures.
- * I have the best intention to write more detailed documentation but if you see this, there was not enough time or will to do so.
+ * The utility that contains helper methods for working with arrays. Adds the missing functionality for
+ * {@link java.util.Arrays} class.
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2022
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ArrayUtils {
 
 	/**

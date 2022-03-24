@@ -7,6 +7,7 @@ import one.edee.oss.proxycian.util.ReflectionUtils;
 import one.edee.oss.proxycian.utils.GenericsUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -90,23 +91,27 @@ public class LocalDataStoreAdvice implements IntroductionAdvice<LocalDataStorePr
 				/* matcher */       (method, proxyState) -> ReflectionUtils.isMethodDeclaredOn(method, LocalDataStore.class, "computeLocalDataIfAbsent", Supplier.class),
 				/* methodContext */ noContext(),
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> {
-					final Supplier<?> valueSupplier = (Supplier<?>) args[0];
-					final Method getter = valueSupplier.getClass().getMethod("get");
-					final Class<?> methodReturnType = GenericsUtils.getMethodReturnType(valueSupplier.getClass(), getter);
-					final String valueName = computeName(methodReturnType);
-					final Map<String, Serializable> memoryStore = proxyState.getOrCreateLocalDataStore();
-					Serializable value = memoryStore.get(valueName);
-					if (value == null) {
-						final Serializable newValue = (Serializable) valueSupplier.get();
-						memoryStore.put(valueName, newValue);
-						value = newValue;
-					} else if (!methodReturnType.equals(value.getClass())) {
-						throw new IllegalArgumentException(
-							"Guessed type " + methodReturnType.getName() + " doesn't match cached type " + value.getClass().getName() + ". " +
-								"If you're calling with lambda function proper type cannot be guessed from generics. Use computeLocalDataIfAbsent(String, Supplier) method instead!"
-						);
+					try {
+						final Supplier<?> valueSupplier = (Supplier<?>) args[0];
+						final Method getter = valueSupplier.getClass().getMethod("get");
+						final Class<?> methodReturnType = GenericsUtils.getMethodReturnType(valueSupplier.getClass(), getter);
+						final String valueName = computeName(methodReturnType);
+						final Map<String, Serializable> memoryStore = proxyState.getOrCreateLocalDataStore();
+						Serializable value = memoryStore.get(valueName);
+						if (value == null) {
+							final Serializable newValue = (Serializable) valueSupplier.get();
+							memoryStore.put(valueName, newValue);
+							value = newValue;
+						} else if (!methodReturnType.equals(value.getClass())) {
+							throw new IllegalArgumentException(
+								"Guessed type " + methodReturnType.getName() + " doesn't match cached type " + value.getClass().getName() + ". " +
+									"If you're calling with lambda function proper type cannot be guessed from generics. Use computeLocalDataIfAbsent(String, Supplier) method instead!"
+							);
+						}
+						return value;
+					} catch (NoSuchMethodException e) {
+						throw new InvocationTargetException(e);
 					}
-					return value;
 				}
 			),
 			new PredicateMethodClassification<>(

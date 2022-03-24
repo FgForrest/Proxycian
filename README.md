@@ -275,15 +275,16 @@ It may therefore contain rather complex logic without fear of affecting proxy me
 part executed everytime the proxy method is called
 
 ***Note:** if you want to invoke the original method (for example you want only to do something before / after the original
-method executes), use expression: `return invokeSuper.call()`*
+method executes), use expression: `return invokeSuper.call()`, using this expression all method classifiers later in the
+chain (should there be any) will be invoked as well.*
 
 The method call interception logic is straightforward - when a method on a proxy is called for the first time, we need to 
 resolve the proper implementation. The Proxycian will iterate over all advices and within them, over all the method 
-classifiers, the advice provides and selects **the first** method classifier, which predicate returns true. If predicates
-of your advices overlap (the very same method might be intercepted and handled by Advice1 as well as Advice2), the Advice
-which is defined first wins. The predicates may overlap even within single advice, so even the order in which you specify
-method classifiers is crucial. There are also "system methods" that are automatically handled by the Proxycian and these
-have their own priority. The ordering of the method classifier is as follows:
+classifiers, the advice provides and selects all method classifiers, which predicate returns true in the same order
+as they are specified in advice listing and the order of method classification within the advice.
+
+There are also "system methods" that are automatically handled by the Proxycian and these have their own priority. 
+The ordering of the method classifier is as follows:
 
 1. `Object#hashCode()`
 2. `Object#equals()`

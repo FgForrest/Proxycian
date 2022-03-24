@@ -8,6 +8,7 @@ import one.edee.oss.proxycian.recipe.SelfVerifiableState;
 import one.edee.oss.proxycian.util.ReflectionUtils;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,7 +120,11 @@ public class DelegateCallsAdvice<T> implements IntroductionAdvice<T>, SelfVerifi
 				},
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> {
 					final Object targetState = delegateAccessor == null ? proxyState : delegateAccessor.apply(proxyState);
-					return methodContext.invoke(targetState, args);
+					try {
+						return methodContext.invoke(targetState, args);
+					} catch (IllegalAccessException e) {
+						throw new InvocationTargetException(e);
+					}
 				}
 			);
 			this.delegateAccessor = delegateAccessor;

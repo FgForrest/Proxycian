@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class LocalDataStoreAdviceTest extends AbstractByteBuddyProxycianTest {
 
 	@Test
-	public void shouldProxyAnythingAndAddLocalDataStore() {
+	public void ByteBuddyProxyRecipeGenerator_shouldProxyAnythingAndAddLocalDataStore() {
 		final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
 				new Class[] {StatelessClass.class},

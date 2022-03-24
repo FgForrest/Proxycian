@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.function.BiFunction;
@@ -67,7 +68,7 @@ public class PredicateMethodClassification<PROXY, METHOD_CONTEXT, PROXY_STATE> i
 	/**
 	 * Curried {@link MethodInvocationHandler} that carries method context and description along.
 	 */
-	private static class MethodClassificationCurriedMethodContextInvocationHandler<THE_PROXY, THE_METHOD_CONTEXT, THE_PROXY_STATE> implements CurriedMethodContextInvocationHandler<THE_PROXY, THE_PROXY_STATE> {
+	protected static class MethodClassificationCurriedMethodContextInvocationHandler<THE_PROXY, THE_METHOD_CONTEXT, THE_PROXY_STATE> implements CurriedMethodContextInvocationHandler<THE_PROXY, THE_PROXY_STATE> {
 		private final String description;
 		private final THE_METHOD_CONTEXT methodContext;
 		private final MethodInvocationHandler<THE_PROXY, THE_METHOD_CONTEXT, THE_PROXY_STATE> invocationHandler;
@@ -79,7 +80,7 @@ public class PredicateMethodClassification<PROXY, METHOD_CONTEXT, PROXY_STATE> i
 		}
 
 		@Override
-		public Object invoke(THE_PROXY proxy, Method executionMethod, Object[] args, THE_PROXY_STATE proxyState, Callable<Object> invokeSuper) throws Throwable {
+		public Object invoke(THE_PROXY proxy, Method executionMethod, Object[] args, THE_PROXY_STATE proxyState, Callable<Object> invokeSuper) throws InvocationTargetException {
 			return invocationHandler.invoke(
 				proxy, executionMethod, args, methodContext, proxyState, invokeSuper
 			);

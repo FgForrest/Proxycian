@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BeanMemoryStoreAdviceTest extends AbstractJavassistProxycianTest {
 
 	@Test
-	public void shouldProxyJavaBeanInterface() {
+	public void JavassistGenerator_shouldProxyJavaBeanInterface() {
 		final Object theInstance = JavassistProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
 				new Class[] {SomeJavaBeanIface.class},
@@ -48,7 +48,7 @@ public class BeanMemoryStoreAdviceTest extends AbstractJavassistProxycianTest {
 	}
 
 	@Test
-	public void shouldCloneContractWork() {
+	public void JavassistGenerator_shouldCloneContractWork() {
 		final Object theInstance = JavassistProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
 				new Class[] {SomeJavaBeanIface.class},
@@ -78,7 +78,7 @@ public class BeanMemoryStoreAdviceTest extends AbstractJavassistProxycianTest {
 	}
 
 	@Test
-	public void shouldProxyJavaBeanAbstractClass() {
+	public void JavassistGenerator_shouldProxyJavaBeanAbstractClass() {
 		final Object theInstance = JavassistProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
 				new Class[] {SomeJavaBean.class},

@@ -1,5 +1,6 @@
 package one.edee.oss.proxycian;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
@@ -16,9 +17,9 @@ public interface MethodInvocationHandler<PROXY, METHOD_CONTEXT, PROXY_STATE> {
 	 * @param methodContext memoized method context that contains parsed information from method name, args, params etc.
 	 * @param proxyState references to the state object unique for each proxy instance
 	 * @param invokeSuper allows to optionally execute method on superclass
-	 * @return
-	 * @throws Throwable
+	 * @return the result of the method invocation
+	 * @throws InvocationTargetException in case the call of the method fails
 	 */
-    Object invoke(PROXY proxy, Method method, Object[] args, METHOD_CONTEXT methodContext, PROXY_STATE proxyState, Callable<Object> invokeSuper) throws Throwable;
+    Object invoke(PROXY proxy, Method method, Object[] args, METHOD_CONTEXT methodContext, PROXY_STATE proxyState, Callable<Object> invokeSuper) throws InvocationTargetException;
 
 }

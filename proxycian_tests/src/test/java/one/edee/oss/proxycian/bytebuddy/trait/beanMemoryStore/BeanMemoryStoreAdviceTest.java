@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BeanMemoryStoreAdviceTest extends AbstractByteBuddyProxycianTest {
 
 	@Test
-	public void shouldProxyJavaBeanInterface() {
+	public void ByteBuddyProxyRecipeGenerator_shouldProxyJavaBeanInterface() {
 		final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
 				new Class[] {SomeJavaBeanIface.class},
@@ -51,7 +51,7 @@ public class BeanMemoryStoreAdviceTest extends AbstractByteBuddyProxycianTest {
 	}
 
 	@Test
-	public void shouldCloneContractWork() {
+	public void ByteBuddyProxyRecipeGenerator_shouldCloneContractWork() {
 		final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
 				new Class[] {SomeJavaBeanIface.class},
@@ -81,7 +81,7 @@ public class BeanMemoryStoreAdviceTest extends AbstractByteBuddyProxycianTest {
 	}
 
 	@Test
-	public void shouldProxyJavaBeanAbstractClass() {
+	public void ByteBuddyProxyRecipeGenerator_shouldProxyJavaBeanAbstractClass() {
 		final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
 				new Class[] {SomeJavaBean.class},
@@ -106,7 +106,7 @@ public class BeanMemoryStoreAdviceTest extends AbstractByteBuddyProxycianTest {
 	}
 
 	@Test
-	public void shouldProxyJavaBeanWithMultipleItems() {
+	public void ByteBuddyProxyRecipeGenerator_shouldProxyJavaBeanWithMultipleItems() {
 		final Object theInstance = ByteBuddyProxyGenerator.instantiateSerializable(
 			new ProxyRecipe(
 				new Class[] {JavaBeanWithMultipleItems.class},

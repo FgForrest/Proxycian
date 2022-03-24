@@ -6,15 +6,15 @@ import java.lang.reflect.Method;
 import java.util.function.BiFunction;
 
 /**
- * No extra information provided - see (selfexplanatory) method signatures.
- * I have the best intention to write more detailed documentation but if you see this, there was not enough time or will to do so.
+ * Method classification defines an interface for selecting the {@link MethodInvocationHandler} that will react to
+ * the particular method call on the proxy.
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2022
  */
 public interface MethodClassification<PROXY, PROXY_STATE> {
 
 	/**
-	 * no operation lambda creating void methodContext
+	 * No operation lambda creating void methodContext.
 	 **/
 	static <PROXY_STATE> BiFunction<Method, PROXY_STATE, Void> noContext() {
 		return new NoContextFunction<>();

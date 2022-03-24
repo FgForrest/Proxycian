@@ -144,8 +144,8 @@ public class BeanMemoryStoreAdvice implements Advice<BeanMemoryStore> {
 					proxyState.removeValueFromCollectionInMemoryStore(methodContext, (Serializable) args[0]);
 					return null;
 				}
-			)
-		);
+				)
+			);
 	}
 
 }
