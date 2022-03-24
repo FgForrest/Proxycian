@@ -130,18 +130,29 @@ public interface ReflectionUtils {
 	}
 
 	/**
-	 * Returns true if method equals method onClass with the same name and same parameters.
+	 * Returns true if method equals method on any of `onClass` with the same name and same parameters.
 	 */
-	static boolean isMatchingMethodPresentOn(Method method, Class<?> onClass) {
-		try {
-			onClass.getMethod(method.getName(), method.getParameterTypes());
-			return true;
-		} catch (NoSuchMethodException ex) {
-			return false;
-		} catch (Exception ex) {
-			throw new IllegalStateException(
-				"Matcher " + onClass.getName() + " failed to process " + method.toGenericString() + ": " + ex.getMessage(), ex
-			);
+	static boolean isMatchingMethodPresentOn(Method method, Class<?>... onClass) {
+		for (Class<?> aClass : onClass) {
+			try {
+				aClass.getMethod(method.getName(), method.getParameterTypes());
+				return true;
+			} catch (NoSuchMethodException ex) {
+				// just continue
+			} catch (Exception ex) {
+				throw new IllegalStateException(
+					"Matcher " + aClass.getName() + " failed to process " + method.toGenericString() + ": " + ex.getMessage(), ex
+				);
+			}
 		}
+		return false;
 	}
+
+	/**
+	 * Returns true if method is not equal to a method on any of `onClass` with the same name and same parameters.
+	 */
+	static boolean isMatchingMethodNotPresentOn(Method method, Class<?>... onClass) {
+		return !isMatchingMethodPresentOn(method, onClass);
+	}
+
 }
