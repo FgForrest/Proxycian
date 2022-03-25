@@ -9,7 +9,7 @@ import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatchers;
-import one.edee.oss.proxycian.CacheKeyAffectingMethodClassification;
+import one.edee.oss.proxycian.CacheKeyProvider;
 import one.edee.oss.proxycian.CurriedMethodContextInvocationHandler;
 import one.edee.oss.proxycian.DispatcherInvocationHandler;
 import one.edee.oss.proxycian.OnInstantiationCallback;
@@ -78,7 +78,7 @@ public class ByteBuddyProxyGenerator {
 	 * and old JVMs were not able to purge non-used classes from the {@link ClassLoader} -
 	 * <a href="https://stackoverflow.com/questions/2433261/when-and-how-are-classes-garbage-collected-in-java">see this answer</>.
 	 * This cache allows reusing already generated classes for same combination of input interfaces / combination of
-	 * {@link CacheKeyAffectingMethodClassification} classifiers.
+	 * {@link CacheKeyProvider} classifiers.
 	 */
 	public static void clearClassCache() {
 		CACHED_PROXY_CLASSES.clear();

@@ -15,17 +15,17 @@ import java.util.Objects;
  */
 public class ClassMethodCacheKey {
 	@Getter private final Class<?> clazz;
-	@Getter private final Class<?> proxyStateClazz;
+	@Getter private final Object proxyStateCacheKey;
 	@Getter private final Method method;
 	private final Object[] cacheKey;
 	private final int hash;
 
-	public ClassMethodCacheKey(@Nonnull Class<?> clazz, @Nonnull Class<?> proxyStateClazz, @Nonnull Method method, @Nonnull Object[] cacheKey) {
+	public ClassMethodCacheKey(@Nonnull Class<?> clazz, @Nonnull Object proxyStateCacheKey, @Nonnull Method method, @Nonnull Object[] cacheKey) {
 		this.clazz = clazz;
-		this.proxyStateClazz = proxyStateClazz;
+		this.proxyStateCacheKey = proxyStateCacheKey;
 		this.method = method;
 		this.cacheKey = cacheKey;
-		this.hash = Objects.hash(clazz, proxyStateClazz, method, Arrays.hashCode(cacheKey));
+		this.hash = Objects.hash(clazz, proxyStateCacheKey, method, Arrays.hashCode(cacheKey));
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ClassMethodCacheKey {
 		if (((ClassMethodCacheKey) o).hash != this.hash) return false;
 		ClassMethodCacheKey that = (ClassMethodCacheKey) o;
 		return Objects.equals(clazz, that.clazz) &&
-			Objects.equals(proxyStateClazz, that.proxyStateClazz) &&
+			Objects.equals(proxyStateCacheKey, that.proxyStateCacheKey) &&
 			Objects.equals(method, that.method) &&
 			Arrays.equals(cacheKey, that.cacheKey);
 	}

@@ -64,7 +64,7 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherI
 		Callable<Object> defaultMethod,
 		Object[] args
 	) throws Throwable {
-		final ClassMethodCacheKey cacheKey = this.createCacheKey(proxy.getClass(), proxyState.getClass(), method);
+		final ClassMethodCacheKey cacheKey = this.createCacheKey(proxy.getClass(), proxyState, method);
 		// issue https://github.com/raphw/byte-buddy/issues/1177
 		final Callable<Object> superCallable;
 		if (defaultMethod == null && method.isDefault()) {

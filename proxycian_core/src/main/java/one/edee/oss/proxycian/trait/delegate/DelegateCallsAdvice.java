@@ -1,6 +1,6 @@
 package one.edee.oss.proxycian.trait.delegate;
 
-import one.edee.oss.proxycian.CacheKeyAffectingMethodClassification;
+import one.edee.oss.proxycian.CacheKeyProvider;
 import one.edee.oss.proxycian.MethodClassification;
 import one.edee.oss.proxycian.PredicateMethodClassification;
 import one.edee.oss.proxycian.recipe.IntroductionAdvice;
@@ -100,7 +100,7 @@ public class DelegateCallsAdvice<T> implements IntroductionAdvice<T>, SelfVerifi
 	 * @param <U>
 	 * @param <S>
 	 */
-	public static class DelegatingMethodClassification<U, S> extends PredicateMethodClassification<U, Method, S> implements CacheKeyAffectingMethodClassification {
+	public static class DelegatingMethodClassification<U, S> extends PredicateMethodClassification<U, Method, S> implements CacheKeyProvider {
 		private final Function<Object, Object> delegateAccessor;
 
 		public DelegatingMethodClassification(Class<S> iface, Function<Object, Object> delegateAccessor) {

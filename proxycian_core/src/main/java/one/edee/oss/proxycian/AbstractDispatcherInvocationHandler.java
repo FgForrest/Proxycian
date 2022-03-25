@@ -35,13 +35,13 @@ public abstract class AbstractDispatcherInvocationHandler<T> implements Dispatch
 		this.methodClassifications.add(StandardJavaMethods.toStringMethodInvoker());
 		// then implementation specific standard Java Object features - eg serialization
 	    addImplementationSpecificInvokers(this.methodClassifications);
-		// finally call super method handler
+		// finally, call super method handler
 	    this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
 		// now compute the cache key
 	    this.cacheKey = this.methodClassifications
 		    .stream()
-		    .filter(it -> it instanceof CacheKeyAffectingMethodClassification)
-		    .map(it -> ((CacheKeyAffectingMethodClassification)it).getCacheKey())
+		    .filter(it -> it instanceof CacheKeyProvider)
+		    .map(it -> ((CacheKeyProvider)it).getCacheKey())
 		    .filter(Objects::nonNull)
 		    .toArray(Object[]::new);
     }
@@ -52,8 +52,8 @@ public abstract class AbstractDispatcherInvocationHandler<T> implements Dispatch
 		// now compute the cache key
 		this.cacheKey = this.methodClassifications
 			.stream()
-			.filter(it -> it instanceof CacheKeyAffectingMethodClassification)
-			.map(it -> ((CacheKeyAffectingMethodClassification)it).getCacheKey())
+			.filter(it -> it instanceof CacheKeyProvider)
+			.map(it -> ((CacheKeyProvider)it).getCacheKey())
 			.filter(Objects::nonNull)
 			.toArray(Object[]::new);
 	}
@@ -87,8 +87,9 @@ public abstract class AbstractDispatcherInvocationHandler<T> implements Dispatch
 		}
     }
 
-	protected ClassMethodCacheKey createCacheKey(@Nonnull Class<?> aClass, @Nonnull Class<?> proxyStateClazz, @Nonnull Method method) {
-		return new ClassMethodCacheKey(aClass, proxyStateClazz, method, cacheKey);
+	protected ClassMethodCacheKey createCacheKey(@Nonnull Class<?> aClass, @Nonnull Object proxyState, @Nonnull Method method) {
+		final Object proxyStateCacheKey = proxyState instanceof CacheKeyProvider ? ((CacheKeyProvider)proxyState).getCacheKey() : proxyState.getClass();
+		return new ClassMethodCacheKey(aClass, proxyStateCacheKey, method, cacheKey);
 	}
 
 	public <PROXY, PROXY_STATE> CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE> fabricateComposedMethodInvocationHandler(List<CurriedMethodContextInvocationHandler<PROXY, PROXY_STATE>> nestedClassifications) {

@@ -36,7 +36,7 @@ public class JavassistDispatcherInvocationHandler<T> extends AbstractDispatcherI
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
-        final ClassMethodCacheKey cacheKey = this.createCacheKey(self.getClass(), proxyState.getClass(), thisMethod);
+        final ClassMethodCacheKey cacheKey = this.createCacheKey(self.getClass(), proxyState, thisMethod);
 
         // COMPUTE IF ABSENT = GET FROM MAP, IF MISSING OR INVALID -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
         @SuppressWarnings("rawtypes") CurriedMethodContextInvocationHandler invocationHandler = JavassistProxyGenerator.CLASSIFICATION_CACHE.get(cacheKey);

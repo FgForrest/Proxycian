@@ -4,7 +4,7 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-import one.edee.oss.proxycian.CacheKeyAffectingMethodClassification;
+import one.edee.oss.proxycian.CacheKeyProvider;
 import one.edee.oss.proxycian.CurriedMethodContextInvocationHandler;
 import one.edee.oss.proxycian.OnInstantiationCallback;
 import one.edee.oss.proxycian.PredicateMethodClassification;
@@ -56,7 +56,7 @@ public class JavassistProxyGenerator {
 	 * and old JVMs were not able to purge non-used classes from the {@link ClassLoader} -
 	 * <a href="https://stackoverflow.com/questions/2433261/when-and-how-are-classes-garbage-collected-in-java">see this answer</>.
 	 * This cache allows reusing already generated classes for same combination of input interfaces / combination of
-	 * {@link CacheKeyAffectingMethodClassification} classifiers.
+	 * {@link CacheKeyProvider} classifiers.
 	 */
 	public static void clearClassCache() {
 		CACHED_PROXY_CLASSES.clear();
