@@ -32,11 +32,11 @@ import static java.util.Optional.ofNullable;
 public class ProxyRecipe implements Serializable {
 	private static final long serialVersionUID = -4034411993592819942L;
 	private static final Class<?>[] EMPTY_CLASSES = new Class[0];
-	private static final MethodClassification<?, ?>[] EMPTY_METHOD_CLASSIFICATION = new MethodClassification[0];
 
 	@Getter private final OnInstantiationCallback instantiationCallback;
 	@Getter private final Class<?>[] interfaces;
 	@Getter private final Advice<?>[] advices;
+	private transient MethodClassification<?,?>[] methodClassifications;
 	private final Set<Class<?>> verifiedStateClasses = ConcurrentHashMap.newKeySet();
 
 	/**
@@ -156,11 +156,23 @@ public class ProxyRecipe implements Serializable {
 	 * of the method.
 	 */
 	public MethodClassification<?, ?>[] getMethodClassificationsWith(PredicateMethodClassification<?, ?, ?>... baseMethodClassifications) {
-		final List<MethodClassification<?, ?>> methodClassifications = new LinkedList<>(Arrays.asList(baseMethodClassifications));
-		for (Advice<?> advice : advices) {
-			methodClassifications.addAll(advice.getMethodClassification());
-		}
-		return methodClassifications.toArray(EMPTY_METHOD_CLASSIFICATION);
+		final MethodClassification<?, ?>[] methodClassifications = getMethodClassifications();
+		final MethodClassification<?,?>[] combinedResult = new MethodClassification<?,?>[methodClassifications.length + baseMethodClassifications.length];
+		System.arraycopy(methodClassifications, 0, combinedResult, 0, methodClassifications.length);
+		System.arraycopy(baseMethodClassifications, 0, combinedResult, methodClassifications.length, baseMethodClassifications.length);
+		return combinedResult;
 	}
 
+	/*
+		PRIVATE METHODS
+	 */
+
+	private MethodClassification<?, ?>[] getMethodClassifications() {
+		if (this.methodClassifications == null) {
+			this.methodClassifications = Arrays.stream(this.advices)
+				.flatMap(it -> it.getMethodClassification().stream())
+				.toArray(MethodClassification[]::new);
+		}
+		return this.methodClassifications;
+	}
 }
