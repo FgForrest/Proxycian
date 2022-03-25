@@ -292,13 +292,14 @@ additionally selected method invocation.
 There are also "system methods" that are automatically handled by the Proxycian and these have their own priority. 
 The ordering of the method classifier is as follows:
 
-1. `Object#hashCode()`
-2. `Object#equals()`
-3. `Object#toString()`
-4. `Object#clone()`
-5. `ProxyStateAccessor#getProxyState()`
-6. all your method classifiers
-7. when method is still not classified, the original method will be invoked - if it is "abstract", the call will fail
+1. `ProxyStateAccessor#getProxyState()`
+2. all your method classifiers
+3. `Object#hashCode()`
+4. `Object#equals()`
+5. `Object#toString()`
+6. `Object#clone()`
+7. `Object#writeReplace()` - serialization in general
+8. when method is still not classified, the original method will be invoked - if it is "abstract", the call will fail
 
 When method classifier is selected, a function that creates method context is called and its result is cached into the
 `ByteBuddyProxyGenerator` method cache for the key `one.edee.oss.proxycian.cache.ClassMethodCacheKey`. Finally,

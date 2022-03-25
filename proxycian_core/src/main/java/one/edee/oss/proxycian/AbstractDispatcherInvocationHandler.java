@@ -25,16 +25,16 @@ public abstract class AbstractDispatcherInvocationHandler<T> implements Dispatch
 
     protected AbstractDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?>... methodClassifications) {
 		this.proxyState = proxyState;
-		// firstly add all standard Java Object features
+	    // first add infrastructural ProxyStateAccessor handling
+	    this.methodClassifications.add(ProxyStateAccessor.getProxyStateMethodInvoker());
+	    // then add all method classifications developer wants
+	    Collections.addAll(this.methodClassifications, methodClassifications);
+		// then add all standard Java Object features
 		this.methodClassifications.add(StandardJavaMethods.hashCodeMethodInvoker());
 		this.methodClassifications.add(StandardJavaMethods.equalsMethodInvoker());
 		this.methodClassifications.add(StandardJavaMethods.toStringMethodInvoker());
-		// implementation specific standard Java Object features
+		// then implementation specific standard Java Object features - eg serialization
 	    addImplementationSpecificInvokers(this.methodClassifications);
-		// then add infrastructural ProxyStateAccessor handling
-		this.methodClassifications.add(ProxyStateAccessor.getProxyStateMethodInvoker());
-		// finally add all method classifications developer wants
-		Collections.addAll(this.methodClassifications, methodClassifications);
 		// finally call super method handler
 	    this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
 		// now compute the cache key
