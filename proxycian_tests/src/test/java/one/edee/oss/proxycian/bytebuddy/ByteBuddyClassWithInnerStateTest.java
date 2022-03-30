@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ByteBuddyClassWithInnerStateTest extends AbstractByteBuddyProxycianTest {
@@ -36,6 +37,23 @@ public class ByteBuddyClassWithInnerStateTest extends AbstractByteBuddyProxycian
 		assertTrue(theInstance instanceof LocalDataStore);
 		assertEquals("Me, myself and I", theInstance.getStringField());
 		assertEquals(42, theInstance.getIntField());
+	}
+
+	@Test
+	public void ByteBuddyProxyRecipeGenerator_Proxy_CreatedWithSpecializedConstructorType() {
+		final SpecializedImplementation theImplementation = new SpecializedImplementation();
+		final ParentWithCustomParametrizedConstructor theInstance = ByteBuddyProxyGenerator.instantiate(
+			new ProxyRecipe(
+				new Class[] { ParentWithCustomParametrizedConstructor.class },
+				new Advice[] { LocalDataStoreAdvice.INSTANCE }
+			),
+			new GenericBucket(),
+			new Class[] { SpecializedImplementation.class },
+			new Object[] {theImplementation}
+		);
+
+		assertTrue(theInstance instanceof LocalDataStore);
+		assertSame(theImplementation, theInstance.getSomeField());
 	}
 
 	@Test
@@ -99,6 +117,21 @@ public class ByteBuddyClassWithInnerStateTest extends AbstractByteBuddyProxycian
 		private final String stringField;
 		private final int intField;
 		private boolean initialized;
+
+	}
+
+	@Data
+	public static class ParentWithCustomParametrizedConstructor implements Serializable {
+		private static final long serialVersionUID = -26457059608558160L;
+		private final SpecializedInterface someField;
+
+	}
+
+	public interface SpecializedInterface {
+
+	}
+
+	public static class SpecializedImplementation implements SpecializedInterface {
 
 	}
 

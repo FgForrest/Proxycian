@@ -22,6 +22,7 @@ import one.edee.oss.proxycian.trait.ProxyStateAccessor;
 import one.edee.oss.proxycian.trait.SerializableProxy;
 import one.edee.oss.proxycian.trait.SerializableProxy.DeserializationProxyFactory;
 import one.edee.oss.proxycian.utils.ArrayUtils;
+import one.edee.oss.proxycian.utils.ClassUtils;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
@@ -38,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class ByteBuddyProxyGenerator {
 	static final Map<ClassMethodCacheKey, CurriedMethodContextInvocationHandler<?,?>> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
@@ -538,24 +538,7 @@ public class ByteBuddyProxyGenerator {
 			// CACHE KEY
 			new ConstructorCacheKey(clazz, constructorArgs),
 			// LAMBDA THAT FINDS OUT MISSING CONSTRUCTOR
-			aClass -> {
-				try {
-					final Constructor<?> constructor = aClass.getClazz().getDeclaredConstructor(aClass.getArgumentTypes());
-					if (Modifier.isPrivate(constructor.getModifiers())) {
-						throw new NoSuchMethodException();
-					}
-					if (Modifier.isProtected(constructor.getModifiers())) {
-						constructor.setAccessible(true);
-					}
-					return constructor;
-				} catch (NoSuchMethodException e) {
-					throw new IllegalArgumentException(
-						"What the heck? Can't find public/protected constructor with arguments " +
-							Arrays.stream(constructorArgs).map(Class::toGenericString).collect(Collectors.joining(", ")) +
-							" on abstract class: " + e.getMessage(), e
-					);
-				}
-			}
+			aClass -> ClassUtils.findConstructor(aClass, constructorArgs)
 		);
 	}
 

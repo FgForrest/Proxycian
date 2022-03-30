@@ -1,6 +1,8 @@
 package one.edee.oss.proxycian.javassist;
 
 import lombok.Data;
+import one.edee.oss.proxycian.bytebuddy.ByteBuddyClassWithInnerStateTest.ParentWithCustomParametrizedConstructor;
+import one.edee.oss.proxycian.bytebuddy.ByteBuddyClassWithInnerStateTest.SpecializedImplementation;
 import one.edee.oss.proxycian.model.traits.GenericBucket;
 import one.edee.oss.proxycian.recipe.Advice;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
@@ -17,6 +19,7 @@ import java.io.Serializable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JavassistClassWithInnerStateTest extends AbstractJavassistProxycianTest {
@@ -36,6 +39,23 @@ public class JavassistClassWithInnerStateTest extends AbstractJavassistProxycian
 		assertTrue(theInstance instanceof LocalDataStore);
 		assertEquals("Me, myself and I", theInstance.getStringField());
 		assertEquals(42, theInstance.getIntField());
+	}
+
+	@Test
+	public void JavassistProxyGenerator_Proxy_CreatedWithSpecializedConstructorType() {
+		final SpecializedImplementation theImplementation = new SpecializedImplementation();
+		final ParentWithCustomParametrizedConstructor theInstance = JavassistProxyGenerator.instantiate(
+			new ProxyRecipe(
+				new Class[] { ParentWithCustomParametrizedConstructor.class },
+				new Advice[] { LocalDataStoreAdvice.INSTANCE }
+			),
+			new GenericBucket(),
+			new Class[] { SpecializedImplementation.class },
+			new Object[] {theImplementation}
+		);
+
+		assertTrue(theInstance instanceof LocalDataStore);
+		assertSame(theImplementation, theInstance.getSomeField());
 	}
 
 	@Test
