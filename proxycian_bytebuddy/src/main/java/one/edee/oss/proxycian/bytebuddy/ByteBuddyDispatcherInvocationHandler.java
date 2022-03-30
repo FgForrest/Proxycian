@@ -72,6 +72,8 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherI
 			superCallable = () -> {
 				try {
 					return methodHandle.bindTo(proxy).invokeWithArguments(args);
+				} catch (InvocationTargetException | RuntimeException e) {
+					throw e;
 				} catch (Throwable e) {
 					throw new InvocationTargetException(e);
 				}

@@ -22,6 +22,8 @@ public interface StandardJavaMethods {
         /* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> {
 				try {
 					return invokeSuper.call();
+				} catch (InvocationTargetException | RuntimeException e) {
+					throw e;
 				} catch (Exception e) {
 					throw new InvocationTargetException(e);
 				}
