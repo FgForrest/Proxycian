@@ -20,8 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static java.util.Optional.ofNullable;
-
 public class JavassistDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> implements MethodHandler {
     private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class[0];
 
@@ -46,7 +44,7 @@ public class JavassistDispatcherInvocationHandler<T> extends AbstractDispatcherI
         }
 		// INVOKE CURRIED LAMBDA, PASS REFERENCE TO REAL METHOD IF AVAILABLE
 		return invocationHandler.invoke(
-            self, ofNullable(proceed).orElse(thisMethod), args, proxyState,
+            self, thisMethod, args, proxyState,
             new MethodCall(proceed, self, args)
         );
     }

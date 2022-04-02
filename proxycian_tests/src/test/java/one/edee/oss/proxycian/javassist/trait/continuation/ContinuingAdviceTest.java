@@ -51,11 +51,11 @@ public class ContinuingAdviceTest extends AbstractByteBuddyProxycianTest {
 		final double result = proxy.computePi();
 		assertEquals(3.1415936535907742d, result);
 
-		final Long computationTime = (Long) stateBucket.get("_d5computePi");
+		final Long computationTime = (Long) stateBucket.get("computePi");
 		assertNotNull(computationTime);
 		assertTrue(computationTime > 0L);
 
-		final Double memoizedPi = (Double) stateBucket.get("_d5computePi_memoizedResult");
+		final Double memoizedPi = (Double) stateBucket.get("computePi_memoizedResult");
 		assertEquals(3.1415936535907742d, memoizedPi);
 	}
 

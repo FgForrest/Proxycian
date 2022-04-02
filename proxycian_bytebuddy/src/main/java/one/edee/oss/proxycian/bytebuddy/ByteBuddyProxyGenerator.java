@@ -9,6 +9,7 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.Default;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.attribute.MethodAttributeAppender.ForInstrumentedMethod;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.implementation.bytecode.assign.Assigner.Typing;
 import net.bytebuddy.matcher.ElementMatchers;
@@ -376,6 +377,8 @@ public class ByteBuddyProxyGenerator {
 					)
 					// AND DELEGATE CALL TO OUR INVOCATION HANDLER STORED IN PRIVATE FIELD OF THE CLASS
 					.intercept(MethodDelegation.to(ByteBuddyDispatcherInvocationHandler.class))
+					// COPY ALL METHOD / PARAMETER ANNOTATIONS TO THE OVERRIDEN METHODS
+					.attribute(ForInstrumentedMethod.EXCLUDING_RECEIVER)
 					// NOW CREATE THE BYTE-CODE
 					.make()
 					// AND LOAD IT IN CURRENT CLASSLOADER
