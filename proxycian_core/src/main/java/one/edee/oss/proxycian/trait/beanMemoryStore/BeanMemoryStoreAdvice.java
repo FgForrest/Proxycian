@@ -10,7 +10,11 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static java.util.Optional.ofNullable;
@@ -99,6 +103,34 @@ public class BeanMemoryStoreAdvice implements Advice<BeanMemoryStore> {
 				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
 				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse((double) 0)
+			),
+			new PredicateMethodClassification<>(
+				/* description */   "JavaBean list getter",
+				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(GET) && method.getParameterCount() == 0 && List.class.isAssignableFrom(method.getReturnType()),
+				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
+				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
+				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse(Collections.emptyList())
+			),
+			new PredicateMethodClassification<>(
+				/* description */   "JavaBean map getter",
+				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(GET) && method.getParameterCount() == 0 && Map.class.isAssignableFrom(method.getReturnType()),
+				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
+				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
+				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse(Collections.emptyMap())
+			),
+			new PredicateMethodClassification<>(
+				/* description */   "JavaBean set getter",
+				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(GET) && method.getParameterCount() == 0 && Set.class.isAssignableFrom(method.getReturnType()),
+				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
+				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
+				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse(Collections.emptySet())
+			),
+			new PredicateMethodClassification<>(
+				/* description */   "JavaBean collection getter",
+				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(GET) && method.getParameterCount() == 0 && Collection.class.isAssignableFrom(method.getReturnType()),
+				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
+				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
+				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse(Collections.emptyList())
 			),
 			new PredicateMethodClassification<>(
 				/* description */   "JavaBean object getter",
