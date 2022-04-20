@@ -64,35 +64,39 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherI
 		Callable<Object> defaultMethod,
 		Object[] args
 	) throws Throwable {
-		final ClassMethodCacheKey cacheKey = this.createCacheKey(proxy.getClass(), proxyState, method);
-		// issue https://github.com/raphw/byte-buddy/issues/1177
-		final Callable<Object> superCallable;
-		if (defaultMethod == null && method.isDefault()) {
-			final MethodHandle methodHandle = ByteBuddyProxyGenerator.DEFAULT_METHOD_CACHE.computeIfAbsent(cacheKey, ck -> findMethodHandle(ck.getMethod()));
-			superCallable = () -> {
-				try {
-					return methodHandle.bindTo(proxy).invokeWithArguments(args);
-				} catch (InvocationTargetException | RuntimeException e) {
-					throw e;
-				} catch (Throwable e) {
-					throw new InvocationTargetException(e);
-				}
-			};
-		} else {
-			superCallable = defaultMethod != null ? defaultMethod : superMethod;
-		}
+		try {
+			final ClassMethodCacheKey cacheKey = this.createCacheKey(proxy.getClass(), proxyState, method);
+			// issue https://github.com/raphw/byte-buddy/issues/1177
+			final Callable<Object> superCallable;
+			if (defaultMethod == null && method.isDefault()) {
+				final MethodHandle methodHandle = ByteBuddyProxyGenerator.DEFAULT_METHOD_CACHE.computeIfAbsent(cacheKey, ck -> findMethodHandle(ck.getMethod()));
+				superCallable = () -> {
+					try {
+						return methodHandle.bindTo(proxy).invokeWithArguments(args);
+					} catch (InvocationTargetException | RuntimeException e) {
+						throw e;
+					} catch (Throwable e) {
+						throw new InvocationTargetException(e);
+					}
+				};
+			} else {
+				superCallable = defaultMethod != null ? defaultMethod : superMethod;
+			}
 
-		// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING OR INVALID -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
-		@SuppressWarnings("rawtypes") CurriedMethodContextInvocationHandler invocationHandler = ByteBuddyProxyGenerator.CLASSIFICATION_CACHE.get(cacheKey);
-		if (invocationHandler == null) {
-			invocationHandler = this.getCurriedMethodContextInvocationHandler(method);
-			ByteBuddyProxyGenerator.CLASSIFICATION_CACHE.put(cacheKey, invocationHandler);
+			// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING OR INVALID -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
+			@SuppressWarnings("rawtypes") CurriedMethodContextInvocationHandler invocationHandler = ByteBuddyProxyGenerator.CLASSIFICATION_CACHE.get(cacheKey);
+			if (invocationHandler == null) {
+				invocationHandler = this.getCurriedMethodContextInvocationHandler(method);
+				ByteBuddyProxyGenerator.CLASSIFICATION_CACHE.put(cacheKey, invocationHandler);
+			}
+			// INVOKE CURRIED LAMBDA
+			//noinspection unchecked
+			return invocationHandler.invoke(
+				proxy, method, args, proxyState, superCallable
+			);
+		} catch (InvocationTargetException ex) {
+			throw ex.getTargetException();
 		}
-		// INVOKE CURRIED LAMBDA
-		//noinspection unchecked
-		return invocationHandler.invoke(
-			proxy, method, args, proxyState, superCallable
-		);
 	}
 
 	@SuppressWarnings("unchecked")
