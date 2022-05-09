@@ -97,6 +97,10 @@ mvn clean test
 
 Help us maintain at least 80% code coverage!
 
+### How to verify authenticity
+
+Download our [PGP public key](https://keys.openpgp.org/search?q=9D1149B0C74E939DD766C7A93DE3CDCCF660797F) and verify via [PGP verify Maven plugin](https://www.simplify4u.org/pgpverify-maven-plugin/#). See [this article](https://medium.com/netcracker/dependency-verification-checksum-vs-pgp-582e76207019) to find out why.
+
 ## How to use
 
 ### How to integrate to your application
