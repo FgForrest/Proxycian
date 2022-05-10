@@ -37,9 +37,9 @@
 			<id>JNO</id>
 			<email>novotny@fg.cz</email>
 			<name>Jan Novotný</name>
-			<url>http://blog.novoj.net</url>
+			<url>https://blog.novoj.net</url>
 			<organization>FG Forrest, a.s.</organization>
-			<organizationUrl>http://www.fg.cz</organizationUrl>
+			<organizationUrl>https://www.fg.cz</organizationUrl>
 		</developer>
 	</developers>
 
@@ -64,16 +64,39 @@
 
 	<organization>
 		<name>FG Forrest, a.s.</name>
-		<url>http://www.fg.cz</url>
+		<url>https://www.fg.cz</url>
 	</organization>
 
 	<properties>
+		<!-- The oldest Java version supported by this tool. -->
+		<!-- Will control compilation of the main code and the unit tests. -->
+		<base.java.version>1.8</base.java.version>
+		<version>8</version>
+
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit-platform.version>5.7.0</junit-platform.version>
 		<jupiter-surefire.version>1.3.2</jupiter-surefire.version>
+
+		<maven.compiler.version>3.10.1</maven.compiler.version>
+		<maven.toolchains.version>3.0.0</maven.toolchains.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-toolchains-plugin</artifactId>
+				<version>${maven.toolchains.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -84,7 +107,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.22</version>
+			<version>1.18.24</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -134,7 +157,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-toolchains-plugin</artifactId>
-				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -145,7 +167,7 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<version>8</version>
+							<version>${version}</version>
 							<vendor>oracle</vendor>
 						</jdk>
 					</toolchains>
@@ -155,6 +177,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>org.junit.platform</groupId>
@@ -177,6 +202,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.8.2</version>
 				<executions>

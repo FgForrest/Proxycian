@@ -27,11 +27,9 @@ public class ByteBuddyDiamondTest extends AbstractByteBuddyProxycianTest {
 	}
 
 	public interface Trait1 extends SomeSharedInterface {
-
 	}
 
 	public interface Trait2 extends SomeSharedInterface {
-
 	}
 
 	public interface SomeSharedInterface {

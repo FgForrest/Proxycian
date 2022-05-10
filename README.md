@@ -78,13 +78,62 @@ It's matter of a few lines of code.
 - Apache Commons Langs (2.6+)
 - ByteBuddy / Javassist are bundled in our library, there will be no conflict with possible existing libraries on your
   classpath in different version
+- Configured toolchains:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<toolchains>
+   <toolchain>
+      <type>jdk</type>
+      <provides>
+         <version>8</version>
+         <vendor>oracle</vendor>
+      </provides>
+      <configuration>
+         <jdkHome>/opt/Java/jdk8u262-b10/bin/java</jdkHome>
+      </configuration>
+   </toolchain>
+   <toolchain>
+      <type>jdk</type>
+      <provides>
+         <version>11</version>
+         <vendor>oracle</vendor>
+      </provides>
+      <configuration>
+         <jdkHome>/opt/Java/jdk-11.0.8/bin/java</jdkHome>
+      </configuration>
+   </toolchain>
+   <toolchain>
+      <type>jdk</type>
+      <provides>
+         <version>17</version>
+         <vendor>oracle</vendor>
+      </provides>
+      <configuration>
+         <jdkHome>/opt/Java/jdk-17.0.2/bin/java</jdkHome>
+      </configuration>
+   </toolchain>
+</toolchains>
+```
 
 ## How to compile
+
+Currently, we are supporting default flow with **JDK 1.8** and [Multi-Release JAR](https://openjdk.java.net/jeps/238)
 
 Use standard Maven 3 command:
 
 ```
 mvn clean install
+```
+
+To compile for **JDK 1.8, 11 and 17** use specific command:
+```
+mvn clean install -Pmulti-jar  
+```
+Profiles for specific JVM versions are created too.
+```
+- -Pcompile-java8
+- -Pcompile-java11
+- -Pcompile-java17
 ```
 
 ## How to run tests
@@ -94,6 +143,8 @@ Run your tests in an IDE or run:
 ```
 mvn clean test
 ```
+
+Running tests with specific JVM are possible via commands `test` or `verify`, with standard `JUnit` runner the [Multi-Release JAR](https://openjdk.java.net/jeps/238) is ignored and the default `JDK 1.8` class is executed.
 
 Help us maintain at least 80% code coverage!
 
