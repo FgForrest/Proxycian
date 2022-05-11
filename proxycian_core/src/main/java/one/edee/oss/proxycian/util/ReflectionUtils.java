@@ -77,13 +77,11 @@ public interface ReflectionUtils {
 	static MethodHandle findMethodHandle(Method method) {
 		try {
 
-			final Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class, int.class);
+			final Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class);
 			constructor.setAccessible(true);
 
 			final Class<?> declaringClass = method.getDeclaringClass();
-			return constructor
-				.newInstance(declaringClass, Lookup.PRIVATE)
-				.unreflectSpecial(method, declaringClass);
+			return constructor.newInstance(declaringClass).unreflectSpecial(method, declaringClass);
 
 		} catch (Exception ex) {
 			throw new IllegalArgumentException("Can't find handle to method " + method.toGenericString() + "!", ex);
