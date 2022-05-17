@@ -1,7 +1,8 @@
-package one.edee.oss.proxycian.bytebuddy;
+package one.edee.oss.proxycian.bytebuddy.generated;
 
 import lombok.extern.log4j.Log4j2;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import one.edee.oss.proxycian.bytebuddy.ByteBuddyProxyGenerator;
 
 /**
  * Stragegy provider provides an strategy for {@link ByteBuddyProxyGenerator#getProxyClass(Class[], ClassLoader) by specific Java version}

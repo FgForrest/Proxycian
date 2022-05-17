@@ -19,6 +19,7 @@ import one.edee.oss.proxycian.OnInstantiationCallback;
 import one.edee.oss.proxycian.PredicateMethodClassification;
 import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
 import one.edee.oss.proxycian.bytebuddy.generated.GeneratedDummyClass;
+import one.edee.oss.proxycian.bytebuddy.generated.StrategyProvider;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
