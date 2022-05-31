@@ -107,18 +107,13 @@ public class DelegateCallsAdvice<T> implements IntroductionAdvice<T>, SelfVerifi
 			super(
 				/* description */   "Delegate to " + (delegateAccessor == null ? "state" : "state property"),
 				/* matcher */       (method, proxyState)-> {
-					final Object targetState = delegateAccessor == null ? proxyState : delegateAccessor.apply(proxyState);
-					return ReflectionUtils.isMatchingMethodPresentOn(method, iface) && ReflectionUtils.isMatchingMethodPresentOn(method, targetState.getClass());
+					return ReflectionUtils.isMatchingMethodPresentOn(method, iface) && ReflectionUtils.isMatchingMethodPresentOn(method, iface);
 				},
 				/* methodContext */ (method, proxyState) -> {
 					try {
-						final Object targetState = delegateAccessor == null ? proxyState : delegateAccessor.apply(proxyState);
-						final Method delegatingMethod = targetState.getClass().getMethod(method.getName(), method.getParameterTypes());
-						// the method may not be public, but we want to delegate call anyway (this may be as well inter-class call)
-						delegatingMethod.setAccessible(true);
-						return delegatingMethod;
+						return iface.getMethod(method.getName(), method.getParameterTypes());
 					} catch (NoSuchMethodException e) {
-						throw new IllegalStateException("Method " + method.toGenericString() + " is unexpectedly not defined on " + iface.toString() + "!");
+						throw new IllegalStateException("Method " + method.toGenericString() + " is unexpectedly not defined on " + iface + "!");
 					}
 				},
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) -> {
