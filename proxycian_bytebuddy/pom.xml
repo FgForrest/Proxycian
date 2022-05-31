@@ -4,54 +4,49 @@
     <packaging>jar</packaging>
     <name>ByteBuddy proxy implementation</name>
 
-	<parent>
-		<groupId>one.edee.oss</groupId>
-		<artifactId>proxycian</artifactId>
-		<version>1.2.6-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+    <parent>
+        <groupId>one.edee.oss</groupId>
+        <artifactId>proxycian</artifactId>
+        <version>1.2.6-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-	<dependencies>
-	    <dependency>
-		    <groupId>${project.groupId}</groupId>
-		    <artifactId>proxycian_core</artifactId>
-		    <version>${project.version}</version>
-	    </dependency>
-	    <dependency>
-		    <groupId>net.bytebuddy</groupId>
-		    <artifactId>byte-buddy-dep</artifactId>
-		    <version>1.12.8</version>
-	    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>proxycian_core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-dep</artifactId>
+            <version>1.12.8</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-<!--	TODO: MSE / JNO JarJar has been commented out, because MultiReleaseJar is not compatible with JarJar the package name is not changed in the java11,java17... packages		-->
-<!--	        <plugin>-->
-<!--		        <groupId>org.sonatype.plugins</groupId>-->
-<!--		        <artifactId>jarjar-maven-plugin</artifactId>-->
-<!--		        <version>1.9</version>-->
-<!--		        <executions>-->
-<!--			        <execution>-->
-<!--				        <phase>package</phase>-->
-<!--				        <goals>-->
-<!--					        <goal>jarjar</goal>-->
-<!--				        </goals>-->
-<!--				        <configuration>-->
-<!--					        <overwrite>true</overwrite>-->
-<!--					        <includes>-->
-<!--						        <include>net.bytebuddy:byte-buddy-dep</include>-->
-<!--					        </includes>-->
-<!--					        <rules>-->
-<!--						        <rule>-->
-<!--							        <pattern>net.bytebuddy.**</pattern>-->
-<!--							        <result>com.fg.edee.proxy.internal.bytebuddy.@1</result>-->
-<!--						        </rule>-->
-<!--					        </rules>-->
-<!--				        </configuration>-->
-<!--			        </execution>-->
-<!--		        </executions>-->
-<!--	        </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>net.bytebuddy</pattern>
+                            <shadedPattern>one.edee.oss.proxycian.bytebuddy.original</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
