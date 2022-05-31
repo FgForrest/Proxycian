@@ -113,7 +113,10 @@ public class DelegateCallsAdvice<T> implements IntroductionAdvice<T>, SelfVerifi
 				/* methodContext */ (method, proxyState) -> {
 					try {
 						final Object targetState = delegateAccessor == null ? proxyState : delegateAccessor.apply(proxyState);
-						return targetState.getClass().getMethod(method.getName(), method.getParameterTypes());
+						final Method delegatingMethod = targetState.getClass().getMethod(method.getName(), method.getParameterTypes());
+						// the method may not be public, but we want to delegate call anyway (this may be as well inter-class call)
+						delegatingMethod.setAccessible(true);
+						return delegatingMethod;
 					} catch (NoSuchMethodException e) {
 						throw new IllegalStateException("Method " + method.toGenericString() + " is unexpectedly not defined on " + iface.toString() + "!");
 					}
