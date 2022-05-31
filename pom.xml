@@ -344,9 +344,6 @@
 
         <profile>
             <id>java8</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -436,6 +433,9 @@
         </profile>
         <profile>
             <id>multi-jar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <!-- enable java8 - java11 - java17 compilations -->

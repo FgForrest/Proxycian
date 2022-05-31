@@ -82,36 +82,36 @@ It's matter of a few lines of code.
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <toolchains>
-   <toolchain>
-      <type>jdk</type>
-      <provides>
-         <version>8</version>
-         <vendor>oracle</vendor>
-      </provides>
-      <configuration>
-         <jdkHome>/opt/Java/jdk8u262-b10/bin/java</jdkHome>
-      </configuration>
-   </toolchain>
-   <toolchain>
-      <type>jdk</type>
-      <provides>
-         <version>11</version>
-         <vendor>oracle</vendor>
-      </provides>
-      <configuration>
-         <jdkHome>/opt/Java/jdk-11.0.8/bin/java</jdkHome>
-      </configuration>
-   </toolchain>
-   <toolchain>
-      <type>jdk</type>
-      <provides>
-         <version>17</version>
-         <vendor>oracle</vendor>
-      </provides>
-      <configuration>
-         <jdkHome>/opt/Java/jdk-17.0.2/bin/java</jdkHome>
-      </configuration>
-   </toolchain>
+      <toolchain>
+        <type>jdk</type>
+        <provides>
+          <version>8</version>
+          <vendor>oracle</vendor>
+        </provides>
+        <configuration>
+          <jdkHome>/opt/Java/jdk8u262-b10/bin/java</jdkHome>
+        </configuration>
+      </toolchain>
+      <toolchain>
+        <type>jdk</type>
+        <provides>
+          <version>11</version>
+          <vendor>oracle</vendor>
+        </provides>
+        <configuration>
+          <jdkHome>/opt/Java/jdk-11.0.8/bin/java</jdkHome>
+        </configuration>
+      </toolchain>
+            <toolchain>
+        <type>jdk</type>
+        <provides>
+          <version>17</version>
+          <vendor>oracle</vendor>
+        </provides>
+        <configuration>
+          <jdkHome>/opt/Java/jdk-17.0.2/bin/java</jdkHome>
+        </configuration>
+      </toolchain>
 </toolchains>
 ```
 
@@ -131,9 +131,9 @@ mvn clean install -Pmulti-jar
 ```
 Profiles for specific JVM versions are created too.
 ```
-- -Pcompile-java8
-- -Pcompile-java11
-- -Pcompile-java17
+mvn clean install -Pjava8
+mvn clean install -Pjava11
+mvn clean install -Pjava17
 ```
 
 ## How to run tests
@@ -141,7 +141,9 @@ Profiles for specific JVM versions are created too.
 Run your tests in an IDE or run:
 
 ```
-mvn clean test
+mvn clean verify -Pjava8
+mvn clean verify -Pjava11
+mvn clean verify -Pjava7
 ```
 
 Running tests with specific JVM are possible via commands `test` or `verify`, with standard `JUnit` runner the [Multi-Release JAR](https://openjdk.java.net/jeps/238) is ignored and the default `JDK 1.8` class is executed.
