@@ -164,7 +164,7 @@ Include the Proxycian library in your Maven descriptor (`pom.xml`):
 <dependency>   
     <groupId>one.edee.oss</groupId>   
     <artifactId>proxycian_bytebuddy</artifactId>   
-    <version>1.0.2</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
@@ -172,7 +172,7 @@ Or Gradle:
 
 ```
 dependencies {
-    compile 'one.edee.oss:proxycian_bytebuddy:1.0.2'
+    compile 'one.edee.oss:proxycian_bytebuddy:1.3.0'
 }
 ```
 
