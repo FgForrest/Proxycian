@@ -17,7 +17,7 @@ import java.lang.invoke.MethodHandles;
 public class StrategyProvider {
     @SneakyThrows
     public ClassLoadingStrategy<ClassLoader> getStrategy(Class<?> targetClass) {
-        log.debug("StrategyProvider.getStrategy is evaluated by JVM version 11");
+        log.debug("ClassLoadingStrategy is va MethodHandles::lookup with fallback as JVM is running on JDK11, this is a behaviour called via MultiReleaseBuild. Other strategies are evaluated when running JDK8 / JDK17 with MultiRelease Build");
         return ClassLoadingStrategy.UsingLookup.withFallback(MethodHandles::lookup);
     }
 }

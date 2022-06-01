@@ -119,13 +119,13 @@ It's matter of a few lines of code.
 
 Currently, we are supporting default flow with **JDK 1.8** and [Multi-Release JAR](https://openjdk.java.net/jeps/238)
 
-Use standard Maven 3 command:
+Use standard Maven 3 command to compile for `multi-jar`:
 
 ```
 mvn clean install
 ```
 
-To compile for **JDK 1.8, 11 and 17** use specific command:
+To compile for **JDK 1.8, 11 and 17** with specific profile use specific command:
 ```
 mvn clean install -Pmulti-jar  
 ```

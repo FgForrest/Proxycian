@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>one.edee.oss</groupId>
 		<artifactId>proxycian</artifactId>
-		<version>1.2.6-SNAPSHOT</version>
+		<version>1.2.5-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
