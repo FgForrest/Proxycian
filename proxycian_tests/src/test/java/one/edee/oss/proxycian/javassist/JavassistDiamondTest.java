@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JavassistDiamondTest extends AbstractJavassistProxycianTest {
 
 	@Test
-	public void ByteBuddyProxyRecipeGenerator_DiamondProblemTest() {
+	public void JavassistProxyRecipeGenerator_DiamondProblemTest() {
 		final Object instance = JavassistProxyGenerator.instantiate(
 			// create invocation handler delegating calls to "classifications" - ie atomic features of the proxy
 			new JavassistDispatcherInvocationHandler<>(

@@ -5,7 +5,6 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.DynamicType.Builder.FieldDefinition.Optional.Valuable;
 import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ParameterDefinition.Simple.Annotatable;
 import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ReceiverTypeDefinition;
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.Default;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -19,6 +18,8 @@ import one.edee.oss.proxycian.DispatcherInvocationHandler;
 import one.edee.oss.proxycian.OnInstantiationCallback;
 import one.edee.oss.proxycian.PredicateMethodClassification;
 import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
+import one.edee.oss.proxycian.bytebuddy.generated.GeneratedDummyClass;
+import one.edee.oss.proxycian.bytebuddy.generated.StrategyProvider;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
@@ -55,6 +56,7 @@ public class ByteBuddyProxyGenerator {
 			ProxyStateAccessor.class
 		)
 	);
+	public static final String GENERATED_PACKAGE_PATH = "one.edee.oss.proxycian.bytebuddy.generated.";
 
 	private static final Map<List<Class<?>>, Class<?>> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
 	private static final Map<ConstructorCacheKey, Constructor<?>> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
@@ -319,7 +321,7 @@ public class ByteBuddyProxyGenerator {
 
 				final Valuable<?> theBuilder = builder
 					// WE CAN DEFINE OUR OWN PACKAGE AND NAME FOR THE CLASS
-					.name("com.fg.edee.proxy.bytebuddy.generated." + className + '_' + CLASS_COUNTER.incrementAndGet())
+					.name(GENERATED_PACKAGE_PATH + className + '_' + CLASS_COUNTER.incrementAndGet())
 					// WE'LL CREATE PRIVATE FINAL FIELD FOR STORING OUR INVOCATION HANDLER ON INSTANCE
 					.defineField(INVOCATION_HANDLER_FIELD, ByteBuddyDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL);
 
@@ -384,7 +386,7 @@ public class ByteBuddyProxyGenerator {
 					// AND LOAD IT IN CURRENT CLASSLOADER
 					/* see https://github.com/raphw/byte-buddy/issues/513 and http://mydailyjava.blogspot.com/2018/04/jdk-11-and-proxies-in-world-past.html */
 					/* this needs to be changed with upgrade to JDK 11 */
-					.load(classLoader, Default.INJECTION)
+					.load(classLoader, new StrategyProvider().getStrategy(GeneratedDummyClass.class))
 					// RETURN
 					.getLoaded();
 			});
