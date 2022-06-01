@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.lang.reflect.Modifier;
 
 import static one.edee.oss.proxycian.util.ReflectionUtils.isMethodDeclaredOn;
-import static org.apache.commons.lang.StringUtils.uncapitalize;
+import static org.apache.commons.lang3.StringUtils.uncapitalize;
 
 public interface GenericBucketProxyGenerator {
     String GET = "get";

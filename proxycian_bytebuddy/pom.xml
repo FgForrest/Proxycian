@@ -20,7 +20,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-dep</artifactId>
-            <version>1.12.8</version>
+            <version>1.12.10</version>
         </dependency>
     </dependencies>
 
@@ -42,9 +42,21 @@
                     <relocations>
                         <relocation>
                             <pattern>net.bytebuddy</pattern>
-                            <shadedPattern>one.edee.oss.proxycian.bytebuddy.original</shadedPattern>
+                            <shadedPattern>one.edee.oss.proxycian.bytebuddy.original.bytebuddy</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.objectweb.asm</pattern>
+                            <shadedPattern>one.edee.oss.proxycian.bytebuddy.original.asm</shadedPattern>
                         </relocation>
                     </relocations>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>com.google.code.findbugs:*</exclude>
+                            <exclude>org.projectlombok:*</exclude>
+                            <exclude>org.apache.commons:*</exclude>
+                            <exclude>org.apache.logging.log4j:*</exclude>
+                        </excludes>
+                    </artifactSet>
                 </configuration>
             </plugin>
         </plugins>

@@ -20,36 +20,40 @@
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.28.0-GA</version>
+            <version>3.29.0-GA</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
 	        <plugin>
-		        <groupId>org.sonatype.plugins</groupId>
-		        <artifactId>jarjar-maven-plugin</artifactId>
-		        <version>1.9</version>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-shade-plugin</artifactId>
+		        <version>3.3.0</version>
 		        <executions>
 			        <execution>
 				        <phase>package</phase>
 				        <goals>
-					        <goal>jarjar</goal>
+					        <goal>shade</goal>
 				        </goals>
-				        <configuration>
-					        <overwrite>true</overwrite>
-					        <includes>
-						        <include>org.javassist:javassist</include>
-					        </includes>
-					        <rules>
-						        <rule>
-							        <pattern>javassist.**</pattern>
-							        <result>com.fg.edee.proxy.internal.javassist.@1</result>
-						        </rule>
-					        </rules>
-				        </configuration>
 			        </execution>
 		        </executions>
+		        <configuration>
+			        <relocations>
+				        <relocation>
+					        <pattern>javassist.</pattern>
+					        <shadedPattern>one.edee.oss.proxycian.javassist.original.javassist</shadedPattern>
+				        </relocation>
+			        </relocations>
+			        <artifactSet>
+				        <excludes>
+					        <exclude>com.google.code.findbugs:*</exclude>
+					        <exclude>org.projectlombok:*</exclude>
+					        <exclude>org.apache.commons:*</exclude>
+					        <exclude>org.apache.logging.log4j:*</exclude>
+				        </excludes>
+			        </artifactSet>
+		        </configuration>
 	        </plugin>
         </plugins>
     </build>

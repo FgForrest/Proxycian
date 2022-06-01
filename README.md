@@ -73,9 +73,9 @@ It's matter of a few lines of code.
 
 ## Prerequisites
 
-- JDK 1.8 (currently, only JDK 8 is supported. We plan to support also JDK 11 and 17 in near future)
+- JDK 1.8, 11 or 17 (all are supported with same JARs)
 - Log4J 2 (2.17+)
-- Apache Commons Langs (2.6+)
+- Apache Commons Lang 3 (3.12+)
 - ByteBuddy / Javassist are bundled in our library, there will be no conflict with possible existing libraries on your
   classpath in different version
 - Configured toolchains:
