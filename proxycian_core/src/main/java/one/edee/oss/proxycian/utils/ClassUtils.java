@@ -3,6 +3,7 @@ package one.edee.oss.proxycian.utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
+import one.edee.oss.proxycian.exception.SuperConstructorNotFoundException;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
@@ -56,7 +57,7 @@ public class ClassUtils {
 				}
 			}
 
-			throw new IllegalArgumentException(
+			throw new SuperConstructorNotFoundException(
 				"What the heck? Can't find public/protected constructor with arguments " +
 					Arrays.stream(constructorArgs).map(Class::toGenericString).collect(Collectors.joining(", ")) +
 					" on abstract class: " + e.getMessage(), e
