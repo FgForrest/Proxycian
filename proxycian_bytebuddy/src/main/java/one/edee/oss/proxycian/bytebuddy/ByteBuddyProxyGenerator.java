@@ -22,6 +22,8 @@ import one.edee.oss.proxycian.bytebuddy.generated.GeneratedDummyClass;
 import one.edee.oss.proxycian.bytebuddy.generated.StrategyProvider;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
+import one.edee.oss.proxycian.exception.ProxyInstantiationException;
+import one.edee.oss.proxycian.exception.SuperConstructorNotFoundException;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
 import one.edee.oss.proxycian.trait.ProxyStateAccessor;
 import one.edee.oss.proxycian.trait.SerializableProxy;
@@ -401,7 +403,7 @@ public class ByteBuddyProxyGenerator {
 				proxyState
 			);
 		} catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-			throw new IllegalArgumentException("What the heck? Can't create proxy: " + e.getMessage(), e);
+			throw new ProxyInstantiationException("What the heck? Can't create proxy: " + e.getMessage(), e);
 		}
 	}
 
@@ -422,7 +424,7 @@ public class ByteBuddyProxyGenerator {
 				)
 			);
 		} catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-			throw new IllegalArgumentException("What the heck? Can't create proxy: " + e.getMessage(), e);
+			throw new ProxyInstantiationException("What the heck? Can't create proxy: " + e.getMessage(), e);
 		}
 	}
 
@@ -444,7 +446,7 @@ public class ByteBuddyProxyGenerator {
 					}
 					return constructor;
 				} catch (NoSuchMethodException e) {
-					throw new IllegalArgumentException("What the heck? Can't find default public/protected constructor on abstract class: " + e.getMessage(), e);
+					throw new SuperConstructorNotFoundException("What the heck? Can't find default public/protected constructor on abstract class: " + e.getMessage(), e);
 				}
 			}
 		);

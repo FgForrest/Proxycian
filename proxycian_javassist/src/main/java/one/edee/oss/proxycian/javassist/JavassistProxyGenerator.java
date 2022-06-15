@@ -11,6 +11,8 @@ import one.edee.oss.proxycian.PredicateMethodClassification;
 import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
+import one.edee.oss.proxycian.exception.ProxyInstantiationException;
+import one.edee.oss.proxycian.exception.SuperConstructorNotFoundException;
 import one.edee.oss.proxycian.recipe.ProxyRecipe;
 import one.edee.oss.proxycian.trait.ProxyStateAccessor;
 import one.edee.oss.proxycian.trait.SerializableProxy;
@@ -259,7 +261,7 @@ public class JavassistProxyGenerator {
 			return proxy;
 
 		} catch (Exception e) {
-			throw new IllegalArgumentException("What the heck? Can't create proxy: " + e.getMessage(), e);
+			throw new ProxyInstantiationException("What the heck? Can't create proxy: " + e.getMessage(), e);
 		}
 	}
 
@@ -278,7 +280,7 @@ public class JavassistProxyGenerator {
 			return proxy;
 
 		} catch (Exception e) {
-			throw new IllegalArgumentException("What the heck? Can't create proxy: " + e.getMessage(), e);
+			throw new ProxyInstantiationException("What the heck? Can't create proxy: " + e.getMessage(), e);
 		}
 	}
 
@@ -300,7 +302,7 @@ public class JavassistProxyGenerator {
 					}
 					return constructor;
 				} catch (NoSuchMethodException e) {
-					throw new IllegalArgumentException(
+					throw new SuperConstructorNotFoundException(
 						"What the heck? Can't find default public/protected constructor on abstract class: " + e.getMessage(), e
 					);
 				}
