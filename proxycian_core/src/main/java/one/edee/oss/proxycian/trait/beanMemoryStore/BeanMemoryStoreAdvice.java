@@ -6,6 +6,7 @@ import one.edee.oss.proxycian.recipe.Advice;
 import one.edee.oss.proxycian.trait.localDataStore.LocalDataStore;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
 
@@ -40,9 +42,27 @@ public class BeanMemoryStoreAdvice implements Advice<BeanMemoryStore> {
 	private static final String ADD = "add";
 	private static final String REMOVE = "remove";
 	private final Predicate<Method> basePredicate;
+	private final Supplier<List<?>> emptyListFactory;
+	private final Supplier<Set<?>> emptySetFactory;
+	private final Supplier<Map<?,?>> emptyMapFactory;
 
-	private BeanMemoryStoreAdvice(Predicate<Method> basePredicate) {
+	public BeanMemoryStoreAdvice(@Nonnull Predicate<Method> basePredicate) {
 		this.basePredicate = basePredicate;
+		this.emptyListFactory = Collections::emptyList;
+		this.emptySetFactory = Collections::emptySet;
+		this.emptyMapFactory = Collections::emptyMap;
+	}
+
+	public BeanMemoryStoreAdvice(
+		@Nonnull Predicate<Method> basePredicate,
+		@Nonnull Supplier<List<?>> emptyListFactory,
+		@Nonnull Supplier<Set<?>> emptySetFactory,
+		@Nonnull Supplier<Map<?, ?>> emptyMapFactory
+	) {
+		this.basePredicate = basePredicate;
+		this.emptyListFactory = emptyListFactory;
+		this.emptySetFactory = emptySetFactory;
+		this.emptyMapFactory = emptyMapFactory;
 	}
 
 	@Override
@@ -109,28 +129,28 @@ public class BeanMemoryStoreAdvice implements Advice<BeanMemoryStore> {
 				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(GET) && method.getParameterCount() == 0 && List.class.isAssignableFrom(method.getReturnType()),
 				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
-				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse(Collections.emptyList())
+				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElseGet(emptyListFactory)
 			),
 			new PredicateMethodClassification<>(
 				/* description */   "JavaBean map getter",
 				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(GET) && method.getParameterCount() == 0 && Map.class.isAssignableFrom(method.getReturnType()),
 				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
-				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse(Collections.emptyMap())
+				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElseGet(emptyMapFactory)
 			),
 			new PredicateMethodClassification<>(
 				/* description */   "JavaBean set getter",
 				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(GET) && method.getParameterCount() == 0 && Set.class.isAssignableFrom(method.getReturnType()),
 				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
-				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse(Collections.emptySet())
+				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElseGet(emptySetFactory)
 			),
 			new PredicateMethodClassification<>(
 				/* description */   "JavaBean collection getter",
 				/* matcher */       (method, proxyState) -> basePredicate.test(method) && method.getName().startsWith(GET) && method.getParameterCount() == 0 && Collection.class.isAssignableFrom(method.getReturnType()),
 				/* methodContext */ (method, proxyState) -> StringUtils.uncapitalize(method.getName().substring(GET.length())),
 				/* invocation */    (proxy, method, args, methodContext, proxyState, invokeSuper) ->
-				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElse(Collections.emptyList())
+				ofNullable(proxyState.getValueFromMemoryStore(methodContext)).orElseGet(emptyListFactory)
 			),
 			new PredicateMethodClassification<>(
 				/* description */   "JavaBean object getter",
