@@ -466,7 +466,7 @@
                         <configuration>
                             <argLine>
                                 @{argLine}
-                                --add-opens java.base/java.lang.invoke=ALL-UNNAMED
+                                --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED
                             </argLine>
                             <jdkToolchain>
                                 <version>17</version>
