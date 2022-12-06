@@ -80,7 +80,7 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherI
 					}
 				};
 			} else {
-				superCallable = defaultMethod != null ? defaultMethod : superMethod;
+				superCallable = superMethod == null ? defaultMethod : superMethod;
 			}
 
 			// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING OR INVALID -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
