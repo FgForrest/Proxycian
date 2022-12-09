@@ -127,7 +127,8 @@ public class ProxyRecipe implements Serializable {
 						(pState, reqIface) -> requestedInterface.isInstance(pState);
 					if (!compatibilityChecker.test(proxyState, requestedInterface)) {
 						throw new IllegalArgumentException(
-							"Proxy state " + proxyState.getClass() + " doesn't implement " + requestedInterface + "!"
+							"Proxy state " + proxyState.getClass() + " doesn't implement " + requestedInterface + " " +
+								"requested by " + advice.getClass() + "!"
 						);
 					}
 				});
