@@ -29,6 +29,10 @@ public class ByteBuddyIssuesTest extends AbstractByteBuddyProxycianTest {
 		assertEquals("Hello there", theInstance.sayHello());
 	}
 
+	public void newMethod() {
+		System.out.println("YES");
+	}
+
 	@Data
 	public static class TestSuperclass implements Serializable {
 
