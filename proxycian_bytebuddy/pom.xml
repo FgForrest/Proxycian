@@ -54,7 +54,6 @@
                             <exclude>com.google.code.findbugs:*</exclude>
                             <exclude>org.projectlombok:*</exclude>
                             <exclude>org.apache.commons:*</exclude>
-                            <exclude>org.apache.logging.log4j:*</exclude>
                         </excludes>
                     </artifactSet>
                 </configuration>

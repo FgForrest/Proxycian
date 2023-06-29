@@ -1,6 +1,5 @@
 package one.edee.oss.proxycian.trait;
 
-import lombok.extern.log4j.Log4j2;
 import one.edee.oss.proxycian.DispatcherInvocationHandler;
 import one.edee.oss.proxycian.PredicateMethodClassification;
 import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
@@ -11,14 +10,8 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 public interface SerializableProxy extends Serializable {
 
@@ -83,7 +76,6 @@ public interface SerializableProxy extends Serializable {
 	 * Recipe how to recreate proxy class and its instance on deserialization. Contains all mandatory informations
 	 * to create identical proxy on deserialization.
 	 */
-	@Log4j2
 	class SerializableProxyDescriptor<T extends Serializable> implements Serializable {
 		private static final long serialVersionUID = 8401525823871149500L;
 		private final Class<?>[] interfaces;
@@ -127,11 +119,11 @@ public interface SerializableProxy extends Serializable {
 									if (value instanceof Serializable) {
 										data.put(field.getName(), (Serializable) value);
 									} else {
-										log.warn("Field value: " + currentClass.getName() + "#" + field.getName() + " is not Serializable!");
+										// field value is not Serializable!
 									}
 								}
 							} catch (Exception ignored) {
-								log.warn("Cannot access field: " + currentClass.getName() + "#" + field.getName());
+								// cannot access field
 							}
 						}
 					}
@@ -139,7 +131,7 @@ public interface SerializableProxy extends Serializable {
 					currentClass = currentClass.getSuperclass();
 				}
 			} catch (Exception ex) {
-				log.warn("Cannot serialize additional fields of: " + pojo.getClass().getName() + " (" + ex.getMessage() + ")");
+				// cannot serialize additional fields of the proxy
 			}
 			return data;
 		}
@@ -159,14 +151,14 @@ public interface SerializableProxy extends Serializable {
 					} catch (NoSuchFieldException ex) {
 						// continue
 					} catch (IllegalAccessException ex) {
-						log.warn("Cannot deserialize class field " + currentClass.getName() + "#" + fieldEntry.getKey() + " (" + ex.getMessage() + ")");
+						// cannot deserialize class field
 					}
 				}
 				currentClass = currentClass.getSuperclass();
 			} while (!fieldValues.isEmpty() && !Object.class.equals(currentClass));
 
 			if (!fieldValues.isEmpty()) {
-				log.warn("Fields " + String.join(", ", fieldValues.keySet()) + "  were not deserialized, there are no matching fields in " + proxy.getClass().getName() + " class.");
+				// fields were not deserialized, there are no matching fields in proxy class
 			}
 		}
 

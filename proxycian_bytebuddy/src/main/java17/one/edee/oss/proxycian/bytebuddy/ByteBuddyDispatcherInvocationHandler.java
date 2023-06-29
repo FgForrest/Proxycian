@@ -7,7 +7,8 @@ import one.edee.oss.proxycian.MethodClassification;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.trait.ProxyStateAccessor;
 
-import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import static one.edee.oss.proxycian.bytebuddy.ByteBuddyProxyGenerator.INVOCATION_HANDLER_FIELD;
-import static one.edee.oss.proxycian.util.ReflectionUtils.findMethodHandle;
 
 public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractByteBuddyDispatcherInvocationHandler<T, ByteBuddyDispatcherInvocationHandler<T>> {
 
@@ -34,6 +34,7 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractByteBuddyDi
 	public static Object interceptMethodCall(
 		@This Object proxy,
 		@Origin Method method,
+		@Origin MethodHandles.Lookup lookup,
 		@FieldValue(INVOCATION_HANDLER_FIELD) ByteBuddyDispatcherInvocationHandler<?> handler,
 		@SuperCall(nullIfImpossible = true, serializableProxy = true, fallbackToDefault = false) Callable<Object> superMethod,
 		@DefaultCall(nullIfImpossible = true, serializableProxy = true) Callable<Object> defaultMethod,
@@ -42,34 +43,44 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractByteBuddyDi
 		if (handler == null) {
 			return superMethod.call();
 		} else {
-			return handler.interceptMethodCall(proxy, method, superMethod, defaultMethod, args);
+			return handler.interceptMethodCall(proxy, method, lookup, superMethod, defaultMethod, args);
 		}
 	}
 
 	public Object interceptMethodCall(
 		Object proxy,
 		Method method,
+		MethodHandles.Lookup lookup,
 		Callable<Object> superMethod,
 		Callable<Object> defaultMethod,
 		Object[] args
 	) throws Throwable {
 		try {
 			final ClassMethodCacheKey cacheKey = this.createCacheKey(proxy.getClass(), proxyState, method);
-			// issue https://github.com/raphw/byte-buddy/issues/1177
+
 			final Callable<Object> superCallable;
-			if (defaultMethod == null && method.isDefault()) {
-				final MethodHandle methodHandle = ByteBuddyProxyGenerator.DEFAULT_METHOD_CACHE.computeIfAbsent(cacheKey, ck -> findMethodHandle(ck.getMethod()));
-				superCallable = () -> {
-					try {
-						return methodHandle.bindTo(proxy).invokeWithArguments(args);
-					} catch (InvocationTargetException | RuntimeException e) {
-						throw e;
-					} catch (Throwable e) {
-						throw new InvocationTargetException(e);
-					}
-				};
+			if (method.isDefault()) {
+				if (defaultMethod == null) {
+					superCallable = () -> {
+						try {
+							return MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup)
+								.findSpecial(
+									method.getDeclaringClass(),
+									method.getName(),
+									MethodType.methodType(String.class),
+									method.getDeclaringClass()
+								)
+								.bindTo(proxy)
+								.invokeWithArguments(args);
+						} catch (Throwable e) {
+							throw new InvocationTargetException(e);
+						}
+					};
+				} else {
+					superCallable = defaultMethod;
+				}
 			} else {
-				superCallable = superMethod == null ? defaultMethod : superMethod;
+				superCallable = superMethod;
 			}
 
 			// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING OR INVALID -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
@@ -81,7 +92,7 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractByteBuddyDi
 			// INVOKE CURRIED LAMBDA
 			//noinspection unchecked
 			return invocationHandler.invoke(
-					proxy, method, args, proxyState, superCallable
+				proxy, method, args, proxyState, superCallable
 			);
 		} catch (InvocationTargetException ex) {
 			throw ex.getTargetException();

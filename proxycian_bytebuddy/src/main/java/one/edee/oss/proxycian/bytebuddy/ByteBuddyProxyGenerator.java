@@ -12,12 +12,7 @@ import net.bytebuddy.implementation.attribute.MethodAttributeAppender.ForInstrum
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.implementation.bytecode.assign.Assigner.Typing;
 import net.bytebuddy.matcher.ElementMatchers;
-import one.edee.oss.proxycian.CacheKeyProvider;
-import one.edee.oss.proxycian.CurriedMethodContextInvocationHandler;
-import one.edee.oss.proxycian.DispatcherInvocationHandler;
-import one.edee.oss.proxycian.OnInstantiationCallback;
-import one.edee.oss.proxycian.PredicateMethodClassification;
-import one.edee.oss.proxycian.ProxyStateWithConstructorArgs;
+import one.edee.oss.proxycian.*;
 import one.edee.oss.proxycian.bytebuddy.generated.GeneratedDummyClass;
 import one.edee.oss.proxycian.bytebuddy.generated.StrategyProvider;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
@@ -38,13 +33,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -64,6 +53,7 @@ public class ByteBuddyProxyGenerator {
 	private static final Map<ConstructorCacheKey, Constructor<?>> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
 	private static final AtomicInteger CLASS_COUNTER = new AtomicInteger(0);
 	private static final Method PROXY_CREATED_METHOD;
+	private static final StrategyProvider STRATEGY_PROVIDER = new StrategyProvider();
 
 	static {
 		try {
@@ -388,7 +378,7 @@ public class ByteBuddyProxyGenerator {
 					// AND LOAD IT IN CURRENT CLASSLOADER
 					/* see https://github.com/raphw/byte-buddy/issues/513 and http://mydailyjava.blogspot.com/2018/04/jdk-11-and-proxies-in-world-past.html */
 					/* this needs to be changed with upgrade to JDK 11 */
-					.load(classLoader, new StrategyProvider().getStrategy(GeneratedDummyClass.class))
+					.load(classLoader, STRATEGY_PROVIDER.getStrategy(GeneratedDummyClass.class))
 					// RETURN
 					.getLoaded();
 			});
