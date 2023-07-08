@@ -111,7 +111,8 @@ public class DelegateCallsAdvice<T> implements IntroductionAdvice<T>, SelfVerifi
 				},
 				/* methodContext */ (method, proxyState) -> {
 					try {
-						return iface.getMethod(method.getName(), method.getParameterTypes());
+						final Object targetState = delegateAccessor == null ? proxyState : delegateAccessor.apply(proxyState);
+						return targetState.getClass().getMethod(method.getName(), method.getParameterTypes());
 					} catch (NoSuchMethodException e) {
 						throw new IllegalStateException("Method " + method.toGenericString() + " is unexpectedly not defined on " + iface + "!");
 					}
