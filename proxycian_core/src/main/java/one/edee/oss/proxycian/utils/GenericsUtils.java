@@ -1,23 +1,13 @@
 package one.edee.oss.proxycian.utils;
 
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.annotation.Nonnull;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * This helper class contains generic reflection utils.
@@ -31,36 +21,43 @@ public class GenericsUtils {
 	 * This method will resolve return type of the method signature. Generic will be translated to the
 	 * simple type declaration.
 	 */
-	public static Class<?> getMethodReturnType(Class<?> mainClass, Method methodInvocation) {
-		return getMethodReturnType(mainClass, methodInvocation, null);
+	public static Class<?> getMethodReturnType(Class<?> mainClass, Method method) {
+		Type genericReturnType = method.getGenericReturnType();
+		Class<?> returnType = method.getReturnType();
+		if (genericReturnType == returnType) {
+			return returnType;
+		} else {
+			if (!(genericReturnType instanceof Class)) {
+				if (mainClass != null) {
+					List<GenericBundle> resolvedTypes = getGenericType(mainClass, genericReturnType);
+					if (!resolvedTypes.isEmpty()) {
+						return resolvedTypes.get(0).getResolvedType();
+					}
+				}
+			}
+			return returnType;
+		}
 	}
 
 	/**
 	 * This method will resolve return type of the method signature. Generic will be translated to the
 	 * simple type declaration.
 	 */
-	public static Class<?> getMethodReturnType(Class<?> mainClass, Method method, List<Class<?>> alreadyResolvedClasses) {
+	public static List<GenericBundle> getNestedMethodReturnTypes(Class<?> mainClass, Method method) {
 		Type genericReturnType = method.getGenericReturnType();
 		Class<?> returnType = method.getReturnType();
 		if (genericReturnType == returnType) {
-			return returnType;
+			return Collections.singletonList(new GenericBundle(returnType));
 		} else {
-			Class<?> result = null;
 			if (!(genericReturnType instanceof Class)) {
 				if (mainClass != null) {
-					List<Class<?>> resolvedTypes = getGenericType(mainClass, genericReturnType);
+					List<GenericBundle> resolvedTypes = getGenericType(mainClass, genericReturnType);
 					if (!resolvedTypes.isEmpty()) {
-						result = resolvedTypes.get(0);
+						return resolvedTypes;
 					}
 				}
-				if (result == null && alreadyResolvedClasses != null && !alreadyResolvedClasses.isEmpty()) {
-					result = alreadyResolvedClasses.get(0);
-				}
 			}
-			if (result == null) {
-				result = returnType;
-			}
-			return result;
+			return Collections.singletonList(new GenericBundle(returnType));
 		}
 	}
 
@@ -68,13 +65,6 @@ public class GenericsUtils {
 	 * Returns generic class of the return type if declared.
 	 */
 	public static Class<?> getGenericTypeFromCollection(Class<?> mainClass, Type returnType) {
-		return getGenericTypeFromCollection(mainClass, returnType, null);
-	}
-
-	/**
-	 * Returns generic class of the return type if declared.
-	 */
-	public static Class<?> getGenericTypeFromCollection(Class<?> mainClass, Type returnType, List<Class<?>> alreadyResolvedTypes) {
 		if (returnType instanceof ParameterizedType) {
 			ParameterizedType type = (ParameterizedType) returnType;
 			Type[] typeArguments = type.getActualTypeArguments();
@@ -85,28 +75,26 @@ public class GenericsUtils {
 				} else if (typeArgument instanceof ParameterizedType) {
 					return (Class<?>) ((ParameterizedType) typeArgument).getRawType();
 				} else {
-					List<Class<?>> arguments;
-					if (alreadyResolvedTypes != null && !alreadyResolvedTypes.isEmpty()) {
-						arguments = alreadyResolvedTypes;
-					} else if (mainClass != null) {
+					List<GenericBundle> arguments;
+					if (mainClass != null) {
 						arguments = getGenericType(mainClass, typeArgument);
 					} else if (typeArgument instanceof WildcardType) {
 						Type[] upperBounds = ((WildcardType) typeArgument).getUpperBounds();
 						if (upperBounds != null && upperBounds.length == 1) {
-							arguments = Collections.singletonList(getClass(upperBounds[0]));
+							arguments = Collections.singletonList(getClass(upperBounds[0], Collections.emptyMap()));
 						} else {
-							throw new IllegalArgumentException("Cannot handle generic type: " + returnType.toString());
+							throw new IllegalArgumentException("Cannot handle generic type: " + returnType);
 						}
 					} else {
-						throw new IllegalArgumentException("Cannot handle generic type: " + returnType.toString());
+						throw new IllegalArgumentException("Cannot handle generic type: " + returnType);
 					}
 					if (!arguments.isEmpty() && arguments.get(0) != null) {
-						return arguments.get(0);
+						return arguments.get(0).getResolvedType();
 					} else {
 						try {
 							return (Class<?>) ((TypeVariable<?>) typeArgument).getBounds()[0];
 						} catch (Exception ex) {
-							throw new IllegalArgumentException("Cannot handle generic type: " + returnType.toString(), ex);
+							throw new IllegalArgumentException("Cannot handle generic type: " + returnType, ex);
 						}
 					}
 				}
@@ -125,7 +113,7 @@ public class GenericsUtils {
 	 * @return a list of the raw classes for the actual type arguments.
 	 */
 	@SuppressWarnings({"StaticMethodOnlyUsedInOneClass"})
-	public static List<Class<?>> getGenericType(Class<?> childClass, Type searchedType) {
+	public static List<GenericBundle> getGenericType(Class<?> childClass, Type searchedType) {
 		Map<Type, Type> resolvedTypes = new HashMap<>();
 		Set<Type> examinedTypes = new HashSet<>();
 		//walk through entire hierarchy
@@ -141,13 +129,13 @@ public class GenericsUtils {
 		} else {
 			actualTypeArguments = new Type[]{searchedType};
 		}
-		List<Class<?>> typeArgumentsAsClasses = new ArrayList<>();
+		List<GenericBundle> typeArgumentsAsClasses = new ArrayList<>(actualTypeArguments.length);
 		// resolve types by chasing down type variables.
 		for (Type baseType : actualTypeArguments) {
 			while (resolvedTypes.containsKey(baseType)) {
 				baseType = resolvedTypes.get(baseType);
 			}
-			typeArgumentsAsClasses.add(getClass(baseType));
+			typeArgumentsAsClasses.add(getClass(baseType, resolvedTypes));
 		}
 		return typeArgumentsAsClasses;
 	}
@@ -155,23 +143,38 @@ public class GenericsUtils {
 	/**
 	 * Get the underlying class for a type, or null if the type is a variable type.
 	 *
-	 * @param type the type
+	 * @param type          the type
+	 * @param resolvedTypes
 	 * @return the underlying class
 	 */
 	@SuppressWarnings({"TailRecursion"})
-	public static Class<?> getClass(Type type) {
+	public static GenericBundle getClass(Type type, Map<Type, Type> resolvedTypes) {
 		if (type instanceof Class) {
-			return (Class<?>) type;
+			return new GenericBundle((Class<?>) type);
 		} else if (type instanceof ParameterizedType) {
-			return getClass(((ParameterizedType) type).getRawType());
+			final ParameterizedType parameterizedType = (ParameterizedType) type;
+			final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+			final GenericBundle[] childBundles = new GenericBundle[actualTypeArguments.length];
+			for (Type actualTypeArgument : actualTypeArguments) {
+				childBundles[0] = getClass(actualTypeArgument, resolvedTypes);
+			}
+			return new GenericBundle(
+					getClass(parameterizedType.getRawType(), resolvedTypes).getResolvedType(),
+					childBundles
+			);
 		} else if (type instanceof GenericArrayType) {
-			Type componentType = ((GenericArrayType) type).getGenericComponentType();
-			Class<?> componentClass = getClass(componentType);
+			final GenericArrayType arrayType = (GenericArrayType) type;
+			Type componentType = arrayType.getGenericComponentType();
+			Class<?> componentClass = getClass(componentType, resolvedTypes).getResolvedType();
 			if (componentClass != null) {
-				return Array.newInstance(componentClass, 0).getClass();
+				return new GenericBundle(Array.newInstance(componentClass, 0).getClass());
 			} else {
 				return null;
 			}
+		} else if (type instanceof TypeVariable<?>) {
+			final TypeVariable<?> typeVariable = (TypeVariable<?>) type;
+			final Type resolvedType = resolvedTypes.get(typeVariable);
+			return resolvedType == null ? null : getClass(resolvedType, resolvedTypes);
 		} else {
 			return null;
 		}
@@ -207,6 +210,18 @@ public class GenericsUtils {
 			}
 
 			classWalk(rawType, examinedTypes, resolvedTypes);
+		}
+	}
+
+	@Data
+	@RequiredArgsConstructor
+	public static class GenericBundle {
+		private final Class<?> resolvedType;
+		private final GenericBundle[] genericTypes;
+
+		public GenericBundle(@Nonnull Class<?> resolvedType) {
+			this.resolvedType = resolvedType;
+			this.genericTypes = null;
 		}
 	}
 
