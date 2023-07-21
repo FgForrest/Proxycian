@@ -53,6 +53,14 @@ class GenericsUtilsTest {
     }
 
     @Test
+    void shouldReturnMultipleGenericTypesFromCollectionRecordComponent() {
+        assertEquals(
+                Collections.singletonList(new GenericBundle(List.class, new GenericBundle[]{new GenericBundle(String.class)})),
+                getNestedRecordComponentType(TestComponent.class, TestComponent.class.getRecordComponents()[1])
+        );
+    }
+
+    @Test
     void shouldRecognizeReturnType() throws NoSuchMethodException {
         assertEquals(
                 String.class,
@@ -65,6 +73,14 @@ class GenericsUtilsTest {
         assertEquals(
                 String.class,
                 getFieldType(TestClass.class, AbstractGenericClass.class.getDeclaredField("dataItem"))
+        );
+    }
+
+    @Test
+    void shouldRecognizeRecordComponentType() {
+        assertEquals(
+                String.class,
+                getRecordComponentType(TestComponent.class, TestComponent.class.getRecordComponents()[0])
         );
     }
 
@@ -96,6 +112,13 @@ class GenericsUtilsTest {
         private List<String> strings;
         private Optional<List<String>> optionalStrings;
 
+
+    }
+
+    record TestComponent(
+            List<String> strings,
+            Optional<List<String>> optionalStrings
+    ) {
 
     }
 
