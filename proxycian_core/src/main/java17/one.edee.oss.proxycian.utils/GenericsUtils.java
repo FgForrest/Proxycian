@@ -62,6 +62,28 @@ public class GenericsUtils {
 	}
 
 	/**
+	 * This method will resolve record component type of the record. Generic will be translated to the
+	 * simple type declaration.
+	 */
+	public static Class<?> getRecordComponentType(Class<?> mainClass, RecordComponent recordComponent) {
+		Type genericReturnType = recordComponent.getGenericType();
+		Class<?> returnType = recordComponent.getType();
+		if (genericReturnType == returnType) {
+			return returnType;
+		} else {
+			if (!(genericReturnType instanceof Class)) {
+				if (mainClass != null) {
+					List<GenericBundle> resolvedTypes = getGenericType(mainClass, genericReturnType);
+					if (!resolvedTypes.isEmpty()) {
+						return resolvedTypes.get(0).getResolvedType();
+					}
+				}
+			}
+			return returnType;
+		}
+	}
+
+	/**
 	 * This method will resolve return type of the method signature. Generic will be translated to the
 	 * simple type declaration.
 	 */
@@ -90,6 +112,28 @@ public class GenericsUtils {
 	public static List<GenericBundle> getNestedFieldTypes(Class<?> mainClass, Field field) {
 		Type genericReturnType = field.getGenericType();
 		Class<?> returnType = field.getType();
+		if (genericReturnType == returnType) {
+			return Collections.singletonList(new GenericBundle(returnType));
+		} else {
+			if (!(genericReturnType instanceof Class)) {
+				if (mainClass != null) {
+					List<GenericBundle> resolvedTypes = getGenericType(mainClass, genericReturnType);
+					if (!resolvedTypes.isEmpty()) {
+						return resolvedTypes;
+					}
+				}
+			}
+			return Collections.singletonList(new GenericBundle(returnType));
+		}
+	}
+
+	/**
+	 * This method will resolve return type of the method signature. Generic will be translated to the
+	 * simple type declaration.
+	 */
+	public static List<GenericBundle> getNestedRecordComponentType(Class<?> mainClass, RecordComponent recordComponent) {
+		Type genericReturnType = recordComponent.getGenericType();
+		Class<?> returnType = recordComponent.getType();
 		if (genericReturnType == returnType) {
 			return Collections.singletonList(new GenericBundle(returnType));
 		} else {
