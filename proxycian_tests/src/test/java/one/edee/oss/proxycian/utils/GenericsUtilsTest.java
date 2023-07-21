@@ -29,7 +29,7 @@ class GenericsUtilsTest {
     }
 
     @Test
-    void shouldReturnMultipleGenericTypesFromCollection() throws NoSuchMethodException {
+    void shouldReturnMultipleGenericTypesFromCollectionReturnType() throws NoSuchMethodException {
         assertEquals(
                 Collections.singletonList(new GenericBundle(List.class, new GenericBundle[]{new GenericBundle(String.class)})),
                 getNestedMethodReturnTypes(TestInterface.class, TestInterface.class.getMethod("getOptionalStrings"))
@@ -41,10 +41,46 @@ class GenericsUtilsTest {
     }
 
     @Test
+    void shouldReturnMultipleGenericTypesFromCollectionField() throws NoSuchFieldException {
+        assertEquals(
+                Collections.singletonList(new GenericBundle(List.class, new GenericBundle[]{new GenericBundle(String.class)})),
+                getNestedFieldTypes(TestClass.class, TestClass.class.getDeclaredField("optionalStrings"))
+        );
+        assertEquals(
+                Collections.singletonList(new GenericBundle(List.class, new GenericBundle[]{new GenericBundle(String.class)})),
+                getNestedFieldTypes(TestClass.class, AbstractGenericClass.class.getDeclaredField("optionalData"))
+        );
+    }
+
+    @Test
+    void shouldReturnMultipleGenericTypesFromCollectionRecordComponent() {
+        assertEquals(
+                Collections.singletonList(new GenericBundle(List.class, new GenericBundle[]{new GenericBundle(String.class)})),
+                getNestedRecordComponentType(TestComponent.class, TestComponent.class.getRecordComponents()[1])
+        );
+    }
+
+    @Test
     void shouldRecognizeReturnType() throws NoSuchMethodException {
         assertEquals(
                 String.class,
                 getMethodReturnType(TestInterface.class, TestInterface.class.getMethod("getDataItem"))
+        );
+    }
+
+    @Test
+    void shouldRecognizeFieldType() throws NoSuchFieldException {
+        assertEquals(
+                String.class,
+                getFieldType(TestClass.class, AbstractGenericClass.class.getDeclaredField("dataItem"))
+        );
+    }
+
+    @Test
+    void shouldRecognizeRecordComponentType() {
+        assertEquals(
+                String.class,
+                getRecordComponentType(TestComponent.class, TestComponent.class.getRecordComponents()[0])
         );
     }
 
@@ -62,6 +98,27 @@ class GenericsUtilsTest {
         List<String> getStrings();
 
         Optional<List<String>> getOptionalStrings();
+
+    }
+
+    class AbstractGenericClass<T> {
+        private T dataItem;
+        private List<T> data;
+        private Optional<List<T>> optionalData;
+
+    }
+
+    class TestClass extends AbstractGenericClass<String> {
+        private List<String> strings;
+        private Optional<List<String>> optionalStrings;
+
+
+    }
+
+    record TestComponent(
+            List<String> strings,
+            Optional<List<String>> optionalStrings
+    ) {
 
     }
 
