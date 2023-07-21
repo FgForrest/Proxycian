@@ -23,7 +23,9 @@ public class ByteBuddyDiamondTest extends AbstractByteBuddyProxycianTest {
 			// interfaces to implement
 			Trait1.class, Trait2.class
 		);
+
 		assertEquals("whatever", ((SomeSharedInterface)instance).getCode());
+		((SomeSharedInterface)instance).printValue(45);
 	}
 
 	public interface Trait1 extends SomeSharedInterface {
@@ -36,6 +38,10 @@ public class ByteBuddyDiamondTest extends AbstractByteBuddyProxycianTest {
 
 		default String getCode() {
 			return "whatever";
+		}
+
+		default void printValue(int value) {
+			System.out.println(value);
 		}
 
 	}

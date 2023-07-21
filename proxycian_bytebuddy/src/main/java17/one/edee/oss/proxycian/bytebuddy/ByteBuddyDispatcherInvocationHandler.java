@@ -67,7 +67,7 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractByteBuddyDi
 								.findSpecial(
 									method.getDeclaringClass(),
 									method.getName(),
-									MethodType.methodType(String.class),
+									MethodType.methodType(method.getReturnType(), method.getParameterTypes()),
 									method.getDeclaringClass()
 								)
 								.bindTo(proxy)
