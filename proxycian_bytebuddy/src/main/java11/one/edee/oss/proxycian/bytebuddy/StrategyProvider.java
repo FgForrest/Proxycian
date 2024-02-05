@@ -1,10 +1,7 @@
-package one.edee.oss.proxycian.bytebuddy.generated;
+package one.edee.oss.proxycian.bytebuddy;
 
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
-
-import java.lang.reflect.Method;
 
 import java.lang.invoke.MethodHandles;
 
@@ -16,7 +13,8 @@ import java.lang.invoke.MethodHandles;
 @SuppressWarnings("unused")
 public class StrategyProvider {
     @SneakyThrows
-    public ClassLoadingStrategy<ClassLoader> getStrategy(Class<?> targetClass) {
-        return ClassLoadingStrategy.UsingLookup.withFallback(MethodHandles::lookup);
+    public ClassLoadingStrategy<ClassLoader> getStrategy(Class<?> contextClass) {
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(contextClass, MethodHandles.lookup());
+        return ClassLoadingStrategy.UsingLookup.of(lookup);
     }
 }
