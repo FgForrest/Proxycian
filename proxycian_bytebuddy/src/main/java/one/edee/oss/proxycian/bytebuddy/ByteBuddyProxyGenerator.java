@@ -13,8 +13,6 @@ import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.implementation.bytecode.assign.Assigner.Typing;
 import net.bytebuddy.matcher.ElementMatchers;
 import one.edee.oss.proxycian.*;
-import one.edee.oss.proxycian.bytebuddy.generated.GeneratedDummyClass;
-import one.edee.oss.proxycian.bytebuddy.generated.StrategyProvider;
 import one.edee.oss.proxycian.cache.ClassMethodCacheKey;
 import one.edee.oss.proxycian.cache.ConstructorCacheKey;
 import one.edee.oss.proxycian.exception.ProxyInstantiationException;
@@ -47,8 +45,6 @@ public class ByteBuddyProxyGenerator {
 			ProxyStateAccessor.class
 		)
 	);
-	public static final String GENERATED_PACKAGE_PATH = "one.edee.oss.proxycian.bytebuddy.generated.";
-
 	private static final Map<List<Class<?>>, Class<?>> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
 	private static final Map<ConstructorCacheKey, Constructor<?>> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
 	private static final AtomicInteger CLASS_COUNTER = new AtomicInteger(0);
@@ -285,6 +281,7 @@ public class ByteBuddyProxyGenerator {
 				DynamicType.Builder<?> builder;
 
 				final Class<?> superClass;
+				final Class<?> contextClass;
 				final String className;
 				// IF WE PROXY ABSTRACT CLASS, WE HAVE A RULE THAT IT HAS TO BE FIRST IN LIST
 				if (interfaces[0].isInterface()) {
@@ -295,12 +292,14 @@ public class ByteBuddyProxyGenerator {
 					System.arraycopy(interfaces, 0, finalContract, 1, interfaces.length);
 					// WE'LL EXTEND OBJECT CLASS AND IMPLEMENT ALL INTERFACES
 					superClass = Object.class;
-					className = interfaces[0].getSimpleName();
+					contextClass = interfaces[0];
+					className = contextClass.getName();
 					builder = new ByteBuddy().subclass(Object.class).implement(finalContract);
 				} else {
 					// FIRST IS ABSTRACT CLASS
 					superClass = interfaces[0];
-					className = superClass.getSimpleName();
+					contextClass = superClass;
+					className = superClass.getName();
 					// AUTOMATICALLY ADD PROXYSTATEACCESSOR CLASS TO EVERY OUR PROXY WE CREATE
 					final Class<?>[] finalContract = new Class[interfaces.length];
 					finalContract[0] = ProxyStateAccessor.class;
@@ -313,7 +312,7 @@ public class ByteBuddyProxyGenerator {
 
 				final Valuable<?> theBuilder = builder
 					// WE CAN DEFINE OUR OWN PACKAGE AND NAME FOR THE CLASS
-					.name(GENERATED_PACKAGE_PATH + className + '_' + CLASS_COUNTER.incrementAndGet())
+					.name(className + "$Proxycian_" + CLASS_COUNTER.incrementAndGet())
 					// WE'LL CREATE PRIVATE FINAL FIELD FOR STORING OUR INVOCATION HANDLER ON INSTANCE
 					.defineField(INVOCATION_HANDLER_FIELD, ByteBuddyDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL);
 
@@ -378,7 +377,7 @@ public class ByteBuddyProxyGenerator {
 					// AND LOAD IT IN CURRENT CLASSLOADER
 					/* see https://github.com/raphw/byte-buddy/issues/513 and http://mydailyjava.blogspot.com/2018/04/jdk-11-and-proxies-in-world-past.html */
 					/* this needs to be changed with upgrade to JDK 11 */
-					.load(classLoader, STRATEGY_PROVIDER.getStrategy(GeneratedDummyClass.class))
+					.load(classLoader, STRATEGY_PROVIDER.getStrategy(contextClass))
 					// RETURN
 					.getLoaded();
 			});
